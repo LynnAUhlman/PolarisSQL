@@ -1,0 +1,12 @@
+---ITEM shelf location and record status is FINAL
+
+
+SELECT
+ItemRecordId
+
+FROM
+CircItemRecords
+
+WHERE
+ShelfLocationID =  AND   ---insert shelf location ID  after equal sign
+RecordStatusID = 1
