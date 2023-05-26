@@ -1,0 +1,27 @@
+SELECT
+    th.PolarisUserID AS "User ID",
+    pu.Name AS "Username",
+    o.Name AS "Branch",
+    pu.Enabled AS "Enabled",
+    MAX(th.TranClientDate) AS "Last Login"
+
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+
+JOIN
+    Polaris.Polaris.PolarisUsers pu WITH (NOLOCK) ON pu.PolarisUserID = th.PolarisUserID
+JOIN
+    Polaris.Polaris.Organizations o WITH (NOLOCK) ON o.OrganizationID = pu.OrganizationID
+
+WHERE
+    th.TransactionTypeID = 7200 --Login Code AND
+    pu.Name NOT LIKE '%Deleted%'
+
+GROUP BY
+    th.PolarisUserID,
+    pu.Name,
+    o.Name,
+    pu.Enabled
+
+ORDER BY
+    "Last Login"
