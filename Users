@@ -1,3 +1,5 @@
+----pulls a list of active users and their last login date
+
 SELECT
     th.PolarisUserID AS "User ID",
     pu.Name AS "Username",
