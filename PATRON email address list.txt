@@ -1,0 +1,13 @@
+========================================================
+---Look for email address #s. Used for Bounce Report. 
+---Add them to a record set when found.
+========================================================
+
+SELECT
+PatronID
+
+FROM
+PatronRegistration 
+
+WHERE
+emailaddress IN () ---insert emails in between apostrophes and separated by a comma in between the parentheses like==> ('oscarwilde@nosuchemail.com','sylvia.a.plath@nosuchschool.com')

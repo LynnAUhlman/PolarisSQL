@@ -1,0 +1,14 @@
+========================================================
+---Look for phone #s. Used for Bounce Report. Update btwn
+---PhoneVoice1, PhoneVoice2, and PhoneVoice3 to capture
+---all accounts and add them to record set when found.
+========================================================
+
+SELECT
+PatronID
+
+FROM
+PatronRegistration 
+
+WHERE
+PhoneVoice1 IN ( )   ---insert phone #s in between apostrophes and separated by a comma in between the parentheses like==> ('207-555-1212','602-555-1212')
