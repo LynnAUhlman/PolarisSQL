@@ -1,16 +1,24 @@
--- Declare Bibliographic Record ID as a variable
-DECLARE @BibID INT
+-- Declare Bibliographic Record ID as a variable or comment out
+/*DECLARE @BibID INT*/
 
--- Enter Bibliographic Record ID after equal sign
-SET @BibID = 483861
+--Delcare start and end time variables
+DECLARE @startTrnDate datetime
+DECLARE @endTrnDate datetime
+
+-- Enter Bibliographic Record ID  or comment out
+/*SET @BibID = 483861*/
+
+-- Set range start and end date
+SET @startTrnDate = '2024-01-01 00:00:00.000'
+SET @endTrnDate =  '2024-05-28 23:59:59.999'
 
 SELECT
-    /* th.TransactionID AS [TransactionID] */ -- I don't usually need this, but sometimes, I do. So it's here.
+    /* th.TransactionID AS [TransactionID] */ -- may be useful if needed
     th.TranClientDate AS [Transaction Date],
     holdid.numValue AS [Hold ID],
     tt.TransactionTypeDescription AS [Hold Action],
-	puid.PolarisUserID AS [UserID Responsible],
-	puid.Name AS [Staff Login],
+    puid.PolarisUserID AS [UserID Responsible],
+    puid.Name AS [Staff Login],
     bibid.numValue AS [Bib ID],
     br.BrowseTitle AS [Title],
     itemid.numValue AS [Item ID],
@@ -64,9 +72,12 @@ LEFT JOIN
     Polaris.Polaris.Organizations pickuporg WITH (NOLOCK) ON (pickuporg.OrganizationID = pickup.numValue)
 
 WHERE
-    th.TransactionTypeID IN (6005,6009,6013,6058) -- Holds related Transaction Types for created, denied, cancelled, and transferred
+    th.TransactionTypeID IN (6005,6009,6013,6058) -- Holds transaction types for created, denied, cancelled, and transferred only
+    /*th.TransactionTypeID IN (6005,6006,6007,6008,6009,6010,6011,6012,6013,6039,6051,6052,6053,6054,6058) */ -- All holds transaction types
+/*AND*/
+    /*bibid.numValue = @BibID*/
 AND
-    bibid.numValue = @BibID
+    th.tranClientDate BETWEEN @startTrnDate AND @endTrnDate
 
 ORDER BY
     th.TranClientDate DESC
