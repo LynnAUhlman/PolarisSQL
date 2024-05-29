@@ -1,0 +1,72 @@
+-- Declare Bibliographic Record ID as a variable
+DECLARE @BibID INT
+
+-- Enter Bibliographic Record ID after equal sign
+SET @BibID = 483861
+
+SELECT
+    /* th.TransactionID AS [TransactionID] */ -- I don't usually need this, but sometimes, I do. So it's here.
+    th.TranClientDate AS [Transaction Date],
+    holdid.numValue AS [Hold ID],
+    tt.TransactionTypeDescription AS [Hold Action],
+	puid.PolarisUserID AS [UserID Responsible],
+	puid.Name AS [Staff Login],
+    bibid.numValue AS [Bib ID],
+    br.BrowseTitle AS [Title],
+    itemid.numValue AS [Item ID],
+    cir.Barcode AS [Item Barcode],
+    pickuporg.Name AS [Pickup Library],
+    patronid.numValue AS [Patron ID],
+    pr.PatronFullName AS [Patron Name],
+    patronorg.Name AS [Patron Branch],
+    p.Barcode AS [Patron Barcode]    
+        
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+
+INNER JOIN
+    PolarisTransactions.Polaris.TransactionTypes tt WITH (NOLOCK) ON (tt.TransactionTypeID = th.TransactionTypeID)
+
+INNER JOIN -- Gets the Patron ID
+    PolarisTransactions.Polaris.TransactionDetails patronid WITH (NOLOCK) ON (th.TransactionID = patronid.TransactionID and patronid.TransactionSubTypeID = 6)
+
+INNER JOIN -- Gets the Bibliographic Record ID
+    PolarisTransactions.Polaris.TransactionDetails bibid WITH (NOLOCK) ON (th.TransactionID = bibid.TransactionID and bibid.TransactionSubTypeID = 36)
+
+INNER JOIN -- Gets the Item Record ID (if any)
+    PolarisTransactions.Polaris.TransactionDetails itemid WITH (NOLOCK) ON (th.TransactionID = itemid.TransactionID and itemid.TransactionSubTypeID = 38)
+
+INNER JOIN -- Gets the pickup branch
+    PolarisTransactions.Polaris.TransactionDetails pickup WITH (NOLOCK) ON (th.TransactionID = pickup.TransactionID AND pickup.TransactionSubTypeID = 130)
+
+INNER JOIN -- Gets the Hold ID
+    PolarisTransactions.Polaris.TransactionDetails holdid WITH (NOLOCK) on (th.TransactionID = holdid.TransactionID AND holdid.TransactionSubTypeID=233)
+
+INNER JOIN -- Gets the Polaris User ID responsible for the action
+    Polaris.Polaris.PolarisUsers puid WITH (NOLOCK) on (puid.PolarisUserID = th.PolarisUserID)
+
+INNER JOIN
+    Polaris.Polaris.PatronRegistration pr WITH (NOLOCK) ON (pr.PatronID = patronID.numValue)
+
+INNER JOIN
+    Polaris.Polaris.BibliographicRecords br WITH (NOLOCK) ON (br.BibliographicRecordID = bibid.numValue)
+
+INNER JOIN
+    Polaris.Polaris.Patrons p WITH (NOLOCK) ON (p.PatronID = pr.PatronID)
+
+INNER JOIN
+    Polaris.Polaris.Organizations patronorg WITH (NOLOCK) ON (p.OrganizationID = patronorg.OrganizationID)
+
+LEFT JOIN
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK) ON (cir.ItemRecordID = itemid.numValue)
+
+LEFT JOIN
+    Polaris.Polaris.Organizations pickuporg WITH (NOLOCK) ON (pickuporg.OrganizationID = pickup.numValue)
+
+WHERE
+    th.TransactionTypeID IN (6005,6009,6013,6058) -- Holds related Transaction Types for created, denied, cancelled, and transferred
+AND
+    bibid.numValue = @BibID
+
+ORDER BY
+    th.TranClientDate DESC
