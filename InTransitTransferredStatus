@@ -1,0 +1,34 @@
+SELECT
+    cir.ItemRecordId AS [RecordID],
+    cir.ItemStatusDate AS [Status Date Change],
+    CONCAT (cir.ItemStatusID, '--', ist.Name) AS [Status],
+    cir.AssignedBranchID,
+    ab.Name AS [Item Owning],
+    cir.LoaningOrgID,
+    lo.Name AS [Borrowing Library],
+    cir.InTransitSentBranchID,
+    it.Name AS [Branch Set In Transit]
+
+FROM 
+    CircItemRecords cir WITH (NOLOCK)
+
+INNER JOIN -- Item Status Borrowed
+    polaris.polaris.ItemStatuses ist WITH (NOLOCK)
+        ON ist.ItemStatusID = cir.ItemStatusID
+
+
+INNER JOIN -- Branch Borrowed
+    polaris.polaris.Organizations lo WITH (NOLOCK)
+        ON lo.OrganizationCodeID = cir.LoaningOrgID
+
+INNER JOIN -- Branch Sent
+    polaris.polaris.Organizations it WITH (NOLOCK)
+        ON it.OrganizationCodeID = cir.InTransitSentBranchID
+
+INNER JOIN -- Branch Owning
+    polaris.polaris.Organizations ab WITH (NOLOCK)
+        ON ab.OrganizationCodeID = cir.AssignedBranchID
+
+WHERE 
+    cir.ItemStatusID IN (5, 6) AND
+    cir.ItemStatusDate BETWEEN '2024-01-01 00:00:00.000' AND '2024-06-03 11:43:59.999'
