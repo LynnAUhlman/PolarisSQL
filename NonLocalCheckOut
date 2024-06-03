@@ -1,0 +1,28 @@
+SELECT
+	O.OrganizationID,
+	O.Name,
+	ITS.ItemStatusID,
+	ITS.Description, 
+	CIR.RecordStatusID,
+	count (CIR.ItemRecordID) as NoOfItems
+FROM
+	 Polaris.CircItemRecords CIR with (NOLOCK)
+
+INNER JOIN Polaris.Organizations O with (NOLOCK)
+	ON (CIR.AssignedBranchID = O.OrganizationID)
+INNER JOIN Polaris.ItemStatuses ITS with (nolock)
+	ON (CIR.ItemStatusID = ITS.ItemStatusID)
+
+WHERE
+	cir.ItemStatusID=2 AND
+	cir.AssignedBranchID != cir.LoaningOrgID
+
+GROUP BY O.OrganizationID,
+	O.Name,
+	ITS.ItemStatusID,
+	ITS.Description,
+	CIR.RecordStatusID
+
+ORDER BY
+	O.name, 
+	ITS.Description
