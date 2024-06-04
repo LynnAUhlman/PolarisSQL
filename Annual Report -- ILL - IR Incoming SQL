@@ -1,4 +1,4 @@
-"DECLARE @StartDate DATETIME = '2024-03-01 00:00:00.000'
+DECLARE @StartDate DATETIME = '2024-03-01 00:00:00.000'
 DECLARE @EndDate DATETIME = '2024-03-31 23:59:59.999'
 
 SELECT
@@ -22,4 +22,4 @@ GROUP BY
     O.OrganizationID,
 	O.name
 ORDER BY
-    O.name;"
+    O.name;
