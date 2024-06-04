@@ -1,0 +1,9 @@
+SELECT
+shrs.RequesterBranchID,
+shrs.ResponderBranchID,
+shrs.Sequence,
+shrs.MaxDaysInRTF,
+shrs.PrimarySecondaryFlag
+
+FROM
+SysHoldRoutingSequences  shrs WITH (NOLOCK) --grabs everything from the system level table...updates to the table can only be made on the branch level.
