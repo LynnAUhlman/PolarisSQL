@@ -1,0 +1,15 @@
+SELECT 
+*
+
+FROM 
+PolarisTransactions.Polaris.ViewTransactionData vtd
+
+INNER JOIN
+Polaris.Polaris.Organizations org WITH (NOLOCK)
+	ON org.OrganizationID = vtd.OrganizationID
+
+
+WHERE 
+TransactionTypeID = 6033 and --ill requests
+TransactionSubTypeID = 177 and --filter to ill request id
+TranClientDate between '2024-06-04' and '2024-06-05' --add a date range filter to speed up the query, omit if needed
