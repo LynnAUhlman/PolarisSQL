@@ -1,0 +1,15 @@
+SELECT
+  pr.PatronID,
+  CONVERT(VARCHAR,pr.AddrCheckDate , 101) AS "Check Date"
+
+FROM
+  polaris.polaris.PatronRegistration pr
+
+INNER JOIN
+  polaris.polaris.Patrons p WITH (NOLOCK) 
+    ON 
+
+WHERE
+  pr.UpdateDate = '12/31/2099'
+
+;
