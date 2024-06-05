@@ -1,0 +1,16 @@
+SELECT
+cir.ItemRecordId
+
+FROM
+polaris.polaris.CircItemRecords cir
+
+JOIN
+ItemRecordDetails ird on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE
+cir.AssignedBranchID = 3 AND
+cir.AssignedCollectionID = 3  AND
+cir.RecordstatusID = 1 AND
+(ird.CallNumber LIKE ('j [0-9][3-9]%') OR
+ird.CallNumber LIKE ('j b %')) AND
+cir.materialtypeID != 9

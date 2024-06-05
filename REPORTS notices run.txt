@@ -1,0 +1,15 @@
+SELECT 
+nq.ReportingOrgID, 
+o.Abbreviation, 
+nq.DeliveryOptionID, 
+nq.CreationDate
+
+FROM 
+NotificationQueue nq
+
+INNER JOIN polaris.polaris.Organizations o on (nq.ReportingOrgID = o.OrganizationID)
+
+WHERE 
+DeliveryOptionID = 1
+
+ORDER BY nq.ReportingOrgID

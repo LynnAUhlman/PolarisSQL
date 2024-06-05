@@ -1,0 +1,16 @@
+SELECT
+	cir.itemrecordID AS "Control #",
+	irs.systemblockID AS "Block ID",
+	irsbd.blockdescription AS "Block Description"
+
+FROM
+	polaris.CircItemRecords cir WITH (nolock)
+
+JOIN
+	polaris.ItemRecordSystemBlocks irs WITH (nolock) ON irs.ItemRecordID = cir.ItemRecordID
+JOIN
+	polaris.ItemRecordSystemBlockDescriptions irsbd WITH (nolock) ON irsbd.SystemBlockID = irs.SystemBlockID
+
+WHERE
+	cir.AssignedBranchID = 26
+

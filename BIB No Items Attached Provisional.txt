@@ -1,0 +1,9 @@
+SELECT BR.BibliographicRecordID
+
+FROM BibliographicRecords BR (NOLOCK)
+
+LEFT OUTER JOIN RWRITER_BibDerivedDataView RW (NOLOCK)
+
+ON BR.BibliographicRecordID = RW.BibliographicRecordID
+
+WHERE RW.NumberofItems = 0 AND br.ILLFlag = 0 AND br.recordstatusID = 2

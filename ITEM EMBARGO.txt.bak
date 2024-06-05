@@ -1,0 +1,17 @@
+---ITEM is embargoed from MaineCat for temporary period
+---find NameOfPiece with 'Embargo'
+---and item circ status is On Shelf, Checked Out, Checked Out-ILL (seems unlikely), On Hold, and In-Transit Home
+
+SELECT
+cir.ItemRecordId 
+
+FROM 
+polaris.polaris.CircItemRecords cir
+
+JOIN
+ItemRecordDetails ird on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE 
+ird.CreationDate <= '2023-08-01' AND
+ird.NameOfPiece LIKE ( 'Embargo') AND
+cir.ItemStatusID IN (1,2,3,4,6)

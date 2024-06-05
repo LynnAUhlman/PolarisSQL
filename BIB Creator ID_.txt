@@ -1,0 +1,12 @@
+---determine who created a bib record
+---pulls in a list of all bibs created with the indicated user IDs
+---may want to add date range to avoid a large list of unwanted data
+
+SELECT
+BibliographicRecordId
+
+FROM
+BibliographicRecords
+
+WHERE
+CreatorID IN (44,45)	---insert user ID separated by a comma in between the parentheses

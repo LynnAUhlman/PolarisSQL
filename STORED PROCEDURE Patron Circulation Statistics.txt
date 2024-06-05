@@ -1,0 +1,120 @@
+---Patron Circulation Statistics
+
+USE [Polaris]
+
+GO
+
+
+/****** Object:  StoredProcedure [Polaris].[Rpt_PatronCircStattran]    Script Date: 2/6/2024 4:31:04 PM ******/
+
+SET ANSI_NULLS ON
+
+GO
+
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+
+CREATE PROCEDURE [Polaris].[Rpt_PatronCircStattran]
+
+---Created: 6/25/01, Beth Silliman
+
+--This stored procedure is used for PatronCirculation Report.
+
+--Count of the number of circulation transactions by patron code.
+
+--The report measures activity within a patron code, not items circulated.(PatronCirculationStatistics Report)
+
+       (@OrganizationList NVARCHAR(MAX),
+
+       @dtBeginDate as datetime,
+
+       @dtEndDate as datetime)  
+
+AS
+
+BEGIN
+
+       SET NOCOUNT ON   
+
+      
+
+       CREATE TABLE #Branches (OrganizationID INT) 
+
+       IF LEN(@OrganizationList) = 1 AND @OrganizationList= N'0' -- ALL SELECTED
+
+       BEGIN
+
+              INSERT INTO #Branches
+
+                      SELECT OrganizationID FROM Polaris.Organizations with (NOLOCK) WHERE OrganizationCodeID in (3)
+
+       END
+
+       ELSE
+
+       BEGIN
+
+              EXEC (N'INSERT INTO #Branches SELECT OrganizationID FROM Organizations (NOLOCK) WHERE OrganizationID in(' + @OrganizationList + N')') 
+
+       END
+
+      
+
+              SELECT distinct
+
+                      O.OrganizationID,
+
+                      O.Name,
+
+                      TH.TranClientDate as TransactionDate,
+
+                      TH.TransactionTypeID,
+
+                      TD.TransactionID,
+
+                      TD.Numvalue,
+
+                      PC.Description
+
+              FROM
+
+                     PolarisTransactions.Polaris.TransactionDetails TD with (NOLOCK)
+
+                      INNER JOIN PolarisTransactions.Polaris.TransactionHeaders TH with (NOLOCK)
+
+                             ON (TD.TransactionID = TH.TransactionID and TD.TransactionSubTypeID = 7 )
+
+                      INNER JOIN #Branches B
+
+                             ON(TH.OrganizationID = B.OrganizationID)
+
+                      INNER JOIN Polaris.Organizations O with (NOLOCK)
+
+                             ON(TH.OrganizationID = O.OrganizationID)
+
+                      INNER JOIN Polaris.PatronCodes PC with (NOLOCK)
+
+                             ON (PC.PatronCodeID = TD.NumValue)
+
+              WHERE
+
+                      TH.TranClientDate between @dtBeginDate and @dtEndDate and
+
+                      TH.TransactionTypeID = 6001
+
+              ORDER BY
+
+                      O.Name, PC.Description
+
+      
+
+ 
+
+       return
+
+END
+
+GO

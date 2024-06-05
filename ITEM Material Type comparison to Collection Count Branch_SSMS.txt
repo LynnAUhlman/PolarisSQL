@@ -1,0 +1,26 @@
+---pulls a list using collection name a count of material types, and the material type name for a specific branch
+
+SELECT 
+	c.Name AS "Collection Name", 
+	mt.Description AS "Material Type",
+	count(cir.MaterialTypeID) AS "Material Type Count"
+	
+FROM 
+	polaris.polaris.CircItemRecords cir 
+	
+JOIN 
+	polaris.polaris.Collections c ON c.CollectionID = cir.AssignedCollectionID 
+	
+JOIN
+	polaris.polaris.MaterialTypes mt ON cir.MaterialTypeID = mt.MaterialTypeID 
+	
+WHERE 
+  AssignedBranchID =  	---update with branchID to search
+  
+GROUP BY 
+	c.Name, 
+	cir.MaterialTypeID, 
+	mt.Description 
+	
+ORDER BY
+	count(cir.materialtypeid)

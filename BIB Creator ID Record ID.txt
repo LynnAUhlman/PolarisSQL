@@ -1,0 +1,9 @@
+SELECT
+br.BibliographicRecordId AS "Bib Rec #",
+br.CreatorID AS "Staff ID"
+
+FROM
+BibliographicRecords br WITH (NOLOCK)
+
+WHERE
+br.BibliographicRecordID =       \*enter record ID here*/

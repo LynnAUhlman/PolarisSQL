@@ -1,0 +1,11 @@
+---ITEM Status and FreeTextBlock
+
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+ItemStatusID = 16 AND
+FreeTextBlock LIKE '%%'   ---insert phrase in between percentage symbols to look for in free text block field

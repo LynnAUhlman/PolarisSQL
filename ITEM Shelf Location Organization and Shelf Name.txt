@@ -1,0 +1,22 @@
+---ITEM Shelf Location | Organization | Description
+
+
+SELECT
+ShelfLocationID,
+OrganizationID,
+Description
+
+WHERE
+ShelfLocationID = 
+
+FROM
+ShelfLocations (NOLOCK)
+
+GROUP BY
+ShelfLocationID,
+OrganizationID,
+Description
+
+ORDER BY
+ShelfLocationID,
+

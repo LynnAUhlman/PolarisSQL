@@ -1,0 +1,7 @@
+SELECT
+ShelfLocationID,
+OrganizationID,
+Description
+
+FROM
+Polaris.ShelfLocations (nolock)

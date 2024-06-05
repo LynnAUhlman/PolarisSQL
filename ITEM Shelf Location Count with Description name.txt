@@ -1,0 +1,20 @@
+---ITEM Shelf Location Count with despcription
+
+
+SELECT
+	sl.Description,
+	sl.ShelfLocationID, 
+	COUNT(sl.ShelfLocationID) [CountofShelfLocations]
+
+FROM
+	Polaris.Polaris.CircItemRecords cir WITH (NOLOCK)
+
+INNER JOIN
+	Polaris.Polaris.ShelfLocations sl WITH (NOLOCK) ON sl.ShelfLocationID = cir.ShelfLocationID
+
+GROUP BY
+	sl.Description,
+	sl.ShelfLocationID
+
+ORDER BY 
+	COUNT(sl.ShelfLocationID)

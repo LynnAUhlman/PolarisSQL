@@ -1,0 +1,13 @@
+SELECT
+cir.ItemRecordId 
+
+FROM 
+polaris.polaris.CircItemRecords cir
+
+JOIN
+ItemRecordDetails ird on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE 
+cir.AssignedBranchID = 20 AND
+cir.RecordstatusID = 1 AND
+ird.CallNumber LIKE ( 'E [0-9][3-6]%')

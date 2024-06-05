@@ -1,0 +1,13 @@
+SELECT
+pr.PatronID,
+CONVERT(VARCHAR,pr.AddrCheckDate , 101) AS "Check Date"
+
+FROM
+polaris.polaris.PatronRegistration pr
+
+WHERE
+pr.AddrCheckDate != '12/31/2099'
+
+ORDER BY
+pr.AddrCheckDate
+;

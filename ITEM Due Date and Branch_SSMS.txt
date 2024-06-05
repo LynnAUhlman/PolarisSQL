@@ -1,0 +1,37 @@
+SELECT 
+o.Name AS "Owning Library",
+c.Name AS "Collection",
+sl.Description AS "ShelfLocation",
+convert(varchar(20), cir.Barcode) as ItemBarcode,
+convert(varchar(255), ird.CallNumber) as CallNumber,
+its.Name AS "Status",
+convert(varchar(255), br.BrowseTitle) as Title,
+convert(varchar(255), br.BrowseAuthor) as Author,
+convert(varchar(10), ic.DueDate, 120) as DueDate,
+pr.PatronFirstLastName AS "Name",
+pr.PhoneVoice1 AS Phone1,
+pr.PhoneVoice2 AS Phone2,
+pr.EmailAddress AS Email,
+convert(varchar(20), p.Barcode) as PatronBarcode 
+
+FROM
+Polaris.Polaris.CircItemRecords cir (nolock)
+join Polaris.ItemCheckouts ic (nolock) on cir.ItemRecordID=ic.ItemRecordID
+join Polaris.ItemStatuses its (nolock) on cir.ItemStatusID=its.ItemStatusID
+join Polaris.ItemRecordDetails ird (nolock) on cir.ItemRecordID=ird.ItemRecordID
+join Polaris.Collections c (nolock) on cir.AssignedCollectionID=c.CollectionID
+join Polaris.ShelfLocations sl(nolock) on cir.ShelfLocationID=sl.ShelfLocationID
+join Polaris.BibliographicRecords br (nolock) on cir.AssociatedBibRecordID=br.BibliographicRecordID
+join Polaris.Organizations o (nolock) on cir.AssignedBranchID=o.OrganizationID
+join Polaris.Patrons p (nolock) on ic.PatronID=p.PatronId 
+join Polaris.PatronRegistration pr (nolock) on p.PatronID=pr.PatronID
+
+WHERE  
+p.OrganizationID = 4 AND
+ic.DueDate >= 
+DATEADD(d, -2, convert(date, convert(varchar(6), getdate(),112) + '01'))
+
+ORDER BY
+c.CollectionID,
+ird.CallNumber
+

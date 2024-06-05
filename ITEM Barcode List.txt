@@ -1,0 +1,8 @@
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords (nolock)
+
+WHERE 
+Barcode IN 

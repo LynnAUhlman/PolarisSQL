@@ -1,0 +1,108 @@
+---CO TransactionSubTypeID = 145|Checkout Type
+---COS numValue IN 53,55 |IR Delivery and Walkin #s
+---PB TransactionSubTypeID = 123|Patron’s Assigned Branch
+---IB TransactionSubTypeID = 125|Item’s Assigned Branch
+---PI TransactionSubTypeID = 6|Patron ID
+---II  TransactionSubTypeID = 38|Item ID
+
+DECLARE @StartDate DATETIME
+DECLARE @EndDate DATETIME
+
+SET @StartDate = '2023-07-01 00:00:00.000'
+SET @EndDate = '2023-12-31 23:59:59.999'
+
+SELECT
+	TH.TranClientDate  AS  [Transaction Client Date],
+	TB.OrganizationID  AS  [Transaction Branch ID],
+	TB.Name  AS  [Transaction Branch],
+	CO.TransactionID  AS  [Transaction ID],
+	CO.TransactionSubTypeID  AS  [Transaction Sub Type ID],
+	COS.numValue  AS  [Checkout Type],
+	PO.OrganizationID  AS  [Patron Org ID],
+	PO.Name  AS  [Patron's Assigned Branch],
+	PB.numValue  AS  [Patron's numValue],
+	PI.numValue  AS  [Patron ID],
+	IO.OrganizationID  AS  [Item Org ID],
+	IO.Name  AS  [Item's Assigned Branch],
+	IB.numValue  AS  [Item's numValue],
+	II.numValue  AS  [Item ID],
+	TH.PolarisUserID  AS  [Polaris User ID],
+	PU.Name  AS  [Polaris User Name],
+	W.WorkstationID  AS  [Workstation ID],
+	W.DisplayName  AS  [Workstation Name]
+
+
+FROM
+	PolarisTransactions.Polaris.TransactionHeaders TH with (NOLOCK) 
+
+INNER JOIN --- Pulls the transacting branch
+	Polaris.Polaris.Organizations TB WITH (NOLOCK)
+		ON (TB.OrganizationID = TH.OrganizationID)
+
+INNER JOIN --- Pulls the transaction subtype checkout type [145]
+	PolarisTransactions.Polaris.TransactionDetails CO with (NOLOCK)   
+		ON (TH.TransactionID = CO.TransactionID and CO.TransactionSubTypeID = 145 )     	
+	
+INNER JOIN --- Gets the checkout values for IR CO & Renewals and IR Walkins from TransactionDetails
+	PolarisTransactions.Polaris.TransactionDetails COS WITH (NOLOCK)
+		ON (TH.TransactionID = COS.TransactionID AND COS.numvalue IN (53,55))
+
+INNER JOIN --- Gets the patron's assigned branch from TransactionDetails
+	PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK)
+		ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123)
+
+INNER JOIN --- Gets the item’s assigned branch from TransactionDetails
+	PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK)
+		ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125)
+	
+INNER JOIN --- Gets the PatronID from TransactionDetails
+	PolarisTransactions.Polaris.TransactionDetails PI WITH (NOLOCK)
+		ON (th.TransactionID = PI.TransactionID AND PI.TransactionSubTypeID = 6)
+
+INNER JOIN --- Gets the ItemID from TransactionDetails
+	PolarisTransactions.Polaris.TransactionDetails II WITH (NOLOCK)
+		ON (th.TransactionID = II.TransactionID AND II.TransactionSubTypeID = 38)
+	
+INNER JOIN --- Hooks up Organizations to the patron’s assigned branch from TransactionDetails
+	Polaris.Polaris.Organizations PO WITH (NOLOCK)
+		ON (PO.OrganizationID = PB.numValue)
+
+INNER JOIN --- Hooks up Organizations to the item’s assigned branch from TransactionDetails
+	Polaris.Polaris.Organizations IO WITH (NOLOCK)
+		ON (IO.OrganizationID = IB.numValue)
+
+INNER JOIN 
+	Polaris.PolarisUsers PU WITH (NOLOCK)
+		ON (TH.OrganizationID = PU.OrganizationID)
+
+INNER JOIN  
+	Polaris.Workstations W WITH (NOLOCK)  
+		ON (TH.WorkstationID = W.WorkstationID)
+	
+WHERE -- Check outs
+	TH.TransactionTypeID = 6001
+AND
+	TH.TranClientDate BETWEEN @StartDate AND @EndDate
+
+GROUP BY
+    TB.OrganizationID,
+	TB.Name,
+	IO.Name,
+    COS.numValue,
+    TH.TranClientDate,
+    CO.TransactionID,
+	CO.TransactionSubTypeID,
+	PO.OrganizationID,
+	TH.PolarisUserID,
+	W.WorkstationID,
+	IO.OrganizationID,
+	PO.Name,
+	PU.Name,
+	PB.numValue,
+	PI.numValue,
+	IB.numValue,
+	II.numValue,
+	W.DisplayName
+
+ORDER BY
+	COUNT(DISTINCT TH.TransactionID) DESC

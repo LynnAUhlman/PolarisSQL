@@ -1,0 +1,8 @@
+--Check how many subscriptions the old user has:
+select * 
+
+from 
+dbo.Subscriptions s (nolock)
+
+where 
+s.OwnerID = '    ’

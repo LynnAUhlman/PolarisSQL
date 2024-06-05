@@ -1,0 +1,31 @@
+SELECT
+cir.AssociatedBibRecordId,
+br.PrimaryMARCTOMID,
+tom.Description,
+cir.MaterialTypeId, 
+mt.Description,
+cir.AssignedCollectionId, 
+col.Name,
+cir.ShelfLocationId, 
+sl.Description
+
+from 
+circItemRecords cir (nolock)
+join BibliographicRecords br (nolock) on cir.AssociatedBibRecordID = br.BibliographicRecordID
+join MARCTypeOfMaterial tom (nolock) on br.PrimaryMARCTOMID = tom.MARCTypeOfMaterialID
+join MaterialTypes mt (nolock) on cir.MaterialTypeID = mt.MaterialTypeID
+right outer join Collections col (nolock) on cir.AssignedCollectionID = col.CollectionID
+right outer join ShelfLocations sl (nolock) on cir.ShelfLocationID = sl.ShelfLocationID and cir.AssignedBranchID = sl.OrganizationID
+
+where 
+cir.AssociatedBibRecordId not in
+(select 
+BibliographicRecordId 
+from 
+BibliographicTags bt (nolock)
+where 
+cir.AssociatedBibRecordID = br.BibliographicRecordID and
+bt.TagNumber in (6,7)
+)
+and cir.AssignedBranchId = 8
+order by tom.Description, cir.AssociatedBibRecordId

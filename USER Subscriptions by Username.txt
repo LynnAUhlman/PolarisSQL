@@ -1,0 +1,9 @@
+select * 
+
+from 
+dbo.users u (nolock)
+
+where 
+
+u.UserName like '%%'
+

@@ -1,0 +1,8 @@
+SELECT 
+br.BibliographicRecordID
+
+FROM 
+BibliographicRecords br (NOLOCK)
+
+WHERE 
+br.ImportedFileName = 'VAS_Hsplit2.mrc'

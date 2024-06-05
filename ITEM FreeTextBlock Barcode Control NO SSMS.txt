@@ -1,0 +1,14 @@
+===================================
+ITEM FreeTextBlock, Barcode, Control # SSMS
+===================================
+
+SELECT
+cir.ItemRecordId,
+cir.Barcode,
+cir.FreeTextBlock
+
+FROM
+Polaris.Polaris.CircItemRecords cir WITH (NOLOCK)
+
+WHERE 
+cir.FreeTextBlock = 'INN-Reach from Sierra: @ MaineCat Off-Site'

@@ -1,0 +1,16 @@
+---pulls a list of bibs with ISBNS having a count greater than 1
+
+SELECT 
+	ISBNString, 
+	BibliographicRecordID,
+	COUNT(ISBNString)
+
+FROM
+	BibliographicISBNIndex
+
+GROUP BY
+	ISBNString,
+	BibliographicRecordID
+
+HAVING
+	COUNT(ISBNString) > 1

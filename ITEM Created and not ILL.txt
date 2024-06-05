@@ -1,0 +1,13 @@
+SELECT
+    cir.ItemRecordId 
+
+FROM 
+    polaris.polaris.CircItemRecords cir
+
+JOIN
+    ItemRecordDetails ird on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE 
+    cir.ILLFlag = 0 
+AND
+    ird.CreationDate BETWEEN '01-01-2024' AND '01-26-2024'

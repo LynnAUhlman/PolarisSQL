@@ -1,0 +1,12 @@
+===================================
+ITEM Material Type and Holdable
+===================================
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+MaterialTypeID = 5 AND
+Holdable = 1

@@ -1,0 +1,12 @@
+select 
+ItemRecordId 
+
+from 
+CircItemRecords
+
+where 
+AssignedCollectionID NOT IN ('6') and
+ShelfLocationID NOT IN ('122') and
+LoanPeriodCodeID NOT IN ('2') and
+MaterialTypeID NOT IN ('11') and
+AssignedBranchID = 15 

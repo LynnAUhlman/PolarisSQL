@@ -1,0 +1,18 @@
+SELECT 
+  p.Barcode AS "Barcode",
+  pr.PatronFirstLastName AS "Name",
+  CONVERT(VARCHAR, pr.RegistrationDate, 101) AS "Registered Date",
+  o.Name AS "Registered Location",
+  pc.Description AS "Patron Code"
+
+FROM 
+  Polaris.Polaris.Patrons p (nolock)
+  JOIN Polaris.Polaris.Organizations o (nolock) ON p.OrganizationID = o.OrganizationID
+  JOIN Polaris.Polaris.PatronCodes pc (nolock) ON p.PatronCodeID = pc.PatronCodeID
+  JOIN Polaris.Polaris.PatronRegistration pr (nolock) ON p.PatronID = pr.PatronID
+
+WHERE DATEPART(M, pr.RegistrationDate) = DATEPART(M, DATEADD(M, -1, GETDATE())) 
+  AND DATEPART(YY, pr.RegistrationDate) = DATEPART(YY, DATEADD(M, -1, GETDATE()))
+  AND p.PatronCodeId NOT IN (8, 9, 10, 11, 12)
+
+ORDER BY pr.RegistrationDate;

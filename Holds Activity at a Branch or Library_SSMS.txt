@@ -1,0 +1,80 @@
+-- Let's declare variables!
+DECLARE @StartDate DATETIME;
+DECLARE @EndDate DATETIME;
+ 
+-- Let's set variables!
+SET @StartDate = '2022-07-20 00:00:00';
+SET @EndDate = '2022-07-20 23:59:59';
+ 
+SELECT
+    o.Name AS [Library/Branch],
+    itembranch.Name AS [Assigned Branch],
+    pr.PatronID AS [Patron ID],
+    pr.PatronFullName AS [Patron Name],
+    bib.numValue AS [Bib Record ID],
+    br.BrowseTitle AS [Title],
+    tt.TransactionTypeDescription AS [Hold Action]
+ 
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+ 
+INNER JOIN -- Convert numerical transaction type codes into proper descriptions
+    PolarisTransactions.Polaris.TransactionTypes tt WITH (NOLOCK) on tt.TransactionTypeID = th.TransactionTypeID
+INNER JOIN -- Use this join to get the PatronID from TransactionDetails
+    PolarisTransactions.Polaris.TransactionDetails patron WITH (NOLOCK) ON th.TransactionID = patron.TransactionID
+INNER JOIN -- This join allows us to use that PatronID to get useful goodies from PatronRegistration
+    Polaris.Polaris.PatronRegistration pr WITH (NOLOCK) ON pr.PatronID = patron.NumValue
+INNER JOIN -- We can pull the OrganizationID out of the TransactionHeaders
+    Polaris.Polaris.Organizations o WITH (NOLOCK) ON th.OrganizationID = o.OrganizationID
+INNER JOIN -- And use this join to get the BibliographicRecordID from Transaction Details
+    PolarisTransactions.Polaris.TransactionDetails bib WITH (NOLOCK) ON th.TransactionID = bib.TransactionID
+LEFT OUTER JOIN -- Now use that BibliographicRecordID to get info from the BibliographicRecords table
+    Polaris.Polaris.BibliographicRecords br WITH (NOLOCK) ON br.BibliographicRecordID = bib.numValue
+INNER JOIN -- Let's get the item's assigned branch OrganizationID
+    PolarisTransactions.Polaris.TransactionDetails itemorg WITH (NOLOCK) ON th.TransactionID = itemorg.TransactionID
+INNER JOIN -- And we join the Organizations table again to get the item's assigned branch
+    Polaris.Polaris.Organizations itembranch WITH (NOLOCK) ON itembranch.OrganizationID = itemorg.numValue
+ 
+WHERE
+    th.TransactionTypeID = 6006 -- Set this as needed. See list below for codes.
+    -- Or use multiple codes for multiple hold activity types.
+    --th.TransactionTypeID IN (6006, 6012) -- Gets holds filled at the branch and holds shipped
+AND
+    patron.TransactionSubTypeID = 6 -- The numerical code 
+AND
+    bib.TransactionSubTypeID = 36 -- Pulls the bib record ID
+AND
+    th.TranClientDate BETWEEN @StartDate AND @EndDate
+-- To limit the list to items held at a branch that match the assigned branch, make sure the two numbers below are the same.
+AND -- The branch where the item was held
+    o.OrganizationID = 5
+AND -- The item's assigned branch
+    itembranch.OrganizationID = 5
+ 
+GROUP BY
+    o.Name,
+    pr.PatronID,
+    pr.PatronFullName,
+    bib.numValue,
+    br.BrowseTitle,
+    itembranch.Name,
+    tt.TransactionTypeDescription
+ 
+ORDER BY
+    pr.PatronFullName
+ 
+ 
+/*
+Transaction Type IDs for Various Hold Actions
+---------------------------------------------
+ 
+6005    Hold request created
+6006    Holds become held (item received for hold request)
+6007    Holds become expired
+6008    Holds become unclaimed
+6009    Holds become denied
+6010    Holds become pending
+6011    Holds become not supplied
+6012    Holds become shipped
+6013    Holds become cancelled
+*/

@@ -1,0 +1,10 @@
+SELECT
+cir.ItemRecordId 
+
+FROM 
+polaris.polaris.CircItemRecords cir
+
+WHERE 
+cir.RecordStatusID = 1  AND
+cir.AssignedCollectionID =  17 AND
+cir.StatisticalCodeID <> 11

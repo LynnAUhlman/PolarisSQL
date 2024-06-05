@@ -1,0 +1,45 @@
+SELECT
+    COUNT(distinct th.TransactionID) AS "Count",
+    br.BrowseTitle AS "Title",
+    br.BrowseAuthor AS "Author",
+    cir.Barcode AS "Barcode",
+    ird.CallNumber AS "Call Number",
+    mat.[Description] AS "Material Type",
+	cir.ShelfLocationID AS "Shelf Location",
+    col.[Name] AS "Collection"
+
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+
+LEFT OUTER JOIN
+    PolarisTransactions.Polaris.TransactionDetails td WITH (NOLOCK) ON th.TransactionID = td.TransactionID
+INNER JOIN
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK) ON td.numValue = cir.ItemRecordID
+INNER JOIN
+    Polaris.Polaris.ItemRecordDetails ird WITH (NOLOCK) ON cir.ItemRecordID = ird.ItemRecordID
+INNER JOIN
+    Polaris.Polaris.BibliographicRecords br WITH (NOLOCK) ON br.BibliographicRecordID = cir.AssociatedBibRecordID
+INNER JOIN
+    Polaris.Polaris.MaterialTypes mat WITH (NOLOCK) ON mat.MaterialTypeID = cir.MaterialTypeID
+INNER JOIN
+    Polaris.Polaris.Collections col WITH (NOLOCK) ON col.CollectionID = cir.AssignedCollectionID
+
+WHERE
+    th.TransactionTypeID = 6001
+AND
+    td.TransactionSubTypeID = 38
+AND
+	ird.OwningBranchID = 34
+AND
+    th.TranClientDate BETWEEN '2023-12-12 00:00:00.000' AND '2024-02-02 23:59:59' -- Shift these dates around as desired.
+
+GROUP BY
+    br.BrowseTitle,
+    br.BrowseAuthor,
+    cir.Barcode,
+    ird.CallNumber,
+    mat.[Description],
+	cir.ShelfLocationID,
+    col.[Name]
+
+ORDER BY "Count" DESC

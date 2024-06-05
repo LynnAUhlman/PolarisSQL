@@ -1,0 +1,8 @@
+SELECT
+BibliographicRecordId 
+
+FROM
+BibliographicRecords
+
+WHERE
+BibliographicRecordID IN ()

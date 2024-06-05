@@ -1,0 +1,11 @@
+SELECT 
+cir.ItemRecordID
+
+FROM 
+CircItemRecords (NOLOCK) cir
+
+JOIN BibliographicRecords br (nolock) ON cir.AssociatedBibRecordID = br.BibliographicRecordID
+
+WHERE 
+cir.AssignedBranchID = 36 AND
+br.ImportedFileName = 'VAS_Hsplit2.mrc'

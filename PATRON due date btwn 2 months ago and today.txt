@@ -1,0 +1,42 @@
+SELECT 
+	o.Name AS "Library",
+	convert(varchar(20), cir.Barcode) AS ItemBarcode,
+	convert(varchar(255), br.BrowseTitle) AS Title,
+	convert(varchar(255), br.BrowseAuthor) AS Author,
+	its.Name AS "Status",
+	convert(varchar(10), ic.DueDate, 120) as DueDate,
+	pr.PatronFirstLastName AS "Name",
+	pr.PhoneVoice1 AS Phone1,
+	pr.PhoneVoice2 AS Phone2,
+	pr.EmailAddress AS Email,
+	convert(varchar(20), p.Barcode) as PatronBarcode 
+
+FROM
+	Polaris.Polaris.Patrons p (nolock)
+	
+JOIN
+	Polaris.Organizations o (nolock) ON p.OrganizationID=o.OrganizationID
+	
+JOIN
+	Polaris.PatronRegistration pr (nolock) ON p.PatronID=pr.PatronID
+	
+JOIN
+	Polaris.DeliveryOptions do (nolock) ON pr.DeliveryOptionID=do.DeliveryOptionID
+	
+JOIN
+	Polaris.ItemCheckouts ic (nolock) ON p.PatronId=ic.PatronID 
+	
+JOIN
+	Polaris.CircItemRecords cir (nolock) ON ic.ItemRecordID=cir.ItemRecordID
+	
+JOIN
+	Polaris.ItemStatuses its (nolock) ON cir.ItemStatusID=its.ItemStatusID
+	
+JOIN
+	Polaris.BibliographicRecords br (nolock) ON cir.AssociatedBibRecordID=br.BibliographicRecordID
+
+WHERE  
+	ic.DueDate BETWEEN DATEADD(MM,-2,GETDATE()) AND GETDATE()
+
+ORDER BY
+"Name"

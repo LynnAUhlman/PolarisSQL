@@ -1,0 +1,18 @@
+SELECT 
+	BR.BibliographicRecordID
+FROM   
+	BibliographicRecords BR, 
+	BibliographicTags BT035, 
+	BibliographicSubfields BSF035 
+	
+WHERE  
+	BR.BibliographicRecordID = BT035.BibliographicRecordID AND 
+	BT035.BibliographicTagID = BSF035.BibliographicTagID AND 
+	BT035.TagNumber = 655 AND 
+	BSF035.Subfield = 'a' AND 
+	BSF035.Data LIKE 'GENRE/FORM HEADING'
+
+GROUP BY 
+	BR.BibliographicRecordID  
+
+HAVING COUNT(BR.BibliographicRecordID) > 1

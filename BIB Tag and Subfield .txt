@@ -1,0 +1,14 @@
+SELECT
+cir.AssociatedBibRecordId
+
+from 
+circItemRecords cir (nolock)
+join BibliographicRecords br (nolock) on cir.AssociatedBibRecordID = br.BibliographicRecordID
+join BibliographicTags  bt (nolock) on br.BibliographicRecordID = bt.BibliographicRecordID
+join BibliographicSubfields bs (nolock) on bt.BibliographicTagID = bs.BibliographicTagID
+
+Where
+bt.Tag = 020 AND
+bs.subfield = 'a' AND
+bs.Data LIKE (%%)
+
