@@ -2,20 +2,21 @@ DECLARE @StartDate DATETIME = '2024-03-01 00:00:00.000'
 DECLARE @EndDate DATETIME = '2024-03-31 23:59:59.999'
 
 SELECT
-    O.OrganizationID AS [TransactionBranchID],
-    O.name AS [TransactionBranch],
-    COUNT(DISTINCT TH.TransactionID) AS Total
+  O.OrganizationID AS [TransactionBranchID],
+  O.name AS [TransactionBranch],
+  COUNT(DISTINCT TH.TransactionID) AS Total
+
 FROM
-	    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK)
+  PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK)
 INNER JOIN
 	PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK) 
 		ON TH.TransactionID = TD.TransactionID
 INNER JOIN
-	    Polaris.Polaris.Organizations O WITH (NOLOCK) 
-		ON TH.OrganizationID = O.OrganizationID
+  Polaris.Polaris.Organizations O WITH (NOLOCK) 
+    ON TH.OrganizationID = O.OrganizationID
 INNER JOIN
-	    Polaris.Polaris.Organizations PO WITH (NOLOCK) 
-		ON TD.numvalue = PO.OrganizationID
+  Polaris.Polaris.Organizations PO WITH (NOLOCK) 
+    ON TD.numvalue = PO.OrganizationID
 
 WHERE
 	TH.TransactionTypeID = 6035 
@@ -27,7 +28,7 @@ AND
 	TH.OrganizationID IN (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39)  
 
 GROUP BY
-    O.OrganizationID,
+  O.OrganizationID,
 	O.name
 ORDER BY
     O.name;
