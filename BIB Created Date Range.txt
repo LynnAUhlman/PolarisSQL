@@ -1,9 +1,10 @@
 SELECT 
-br.BibliographicRecordID
+  br.BibliographicRecordID
 
 FROM 
-BibliographicRecords br (NOLOCK)
+  BibliographicRecords br (NOLOCK)
 
 WHERE 
-br.recordstatusID = 1 AND
-br.CreationDate BETWEEN '10-17-2023 11:00:00' AND '10-17-2023 12:05:00'
+  br.recordstatusID = 1 
+AND
+  br.CreationDate BETWEEN '10-17-2023 11:00:00' AND '10-17-2023 12:05:00'
