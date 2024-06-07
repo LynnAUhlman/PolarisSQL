@@ -21,27 +21,38 @@ SELECT DISTINCT
 FROM
     PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK)
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK) ON (TD.TransactionID = TH.TransactionID AND TD.TransactionSubTypeID = 7)
+    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK) 
+        ON (TD.TransactionID = TH.TransactionID AND TD.TransactionSubTypeID = 7)
 INNER JOIN 
-    Polaris.Organizations O WITH (NOLOCK) ON (TH.OrganizationID = O.OrganizationID)
+    Polaris.Organizations O WITH (NOLOCK) 
+        ON (TH.OrganizationID = O.OrganizationID)
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK) ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123)
+    PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK) 
+        ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123)
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK) ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125)
+    PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK) 
+        ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125)
 INNER JOIN 
-    Polaris.Polaris.Organizations PO WITH (NOLOCK) ON (PO.OrganizationID = PB.numValue)
+    Polaris.Polaris.Organizations PO WITH (NOLOCK) 
+        ON (PO.OrganizationID = PB.numValue)
 INNER JOIN 
-    Polaris.Polaris.Organizations IO WITH (NOLOCK) ON (IO.OrganizationID = IB.numValue)
+    Polaris.Polaris.Organizations IO WITH (NOLOCK) 
+        ON (IO.OrganizationID = IB.numValue)
 INNER JOIN 
-    Polaris.Polaris.TransactionDetails II WITH (NOLOCK) ON (TH.TransactionID = II.TransactionID AND II.TransactionSubTypeID = 38)
+    Polaris.Polaris.TransactionDetails II WITH (NOLOCK) 
+        ON (TH.TransactionID = II.TransactionID AND II.TransactionSubTypeID = 38)
 INNER JOIN 
-    Polaris.Polaris.CircItemRecords CIR WITH (NOLOCK) ON (II.NumValue = CIR.ItemRecordID)
+    Polaris.Polaris.CircItemRecords CIR WITH (NOLOCK) 
+        ON (II.NumValue = CIR.ItemRecordID)
 INNER JOIN 
-    Polaris.PatronCodes PC WITH (NOLOCK) ON (PC.PatronCodeID = TD.NumValue)
+    Polaris.PatronCodes PC WITH (NOLOCK) 
+        ON (PC.PatronCodeID = TD.NumValue)
 
 WHERE
     TH.TranClientDate BETWEEN @StartDate AND @EndDate
-    AND TH.TransactionTypeID = 6001
+AND 
+    TH.TransactionTypeID = 6001
 
 ORDER BY
-    O.Name, PC.Description;
+    O.Name, 
+    PC.Description;
