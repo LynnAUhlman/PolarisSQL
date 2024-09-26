@@ -1,0 +1,10 @@
+SELECT DISTINCT 
+    br.BibliographicRecordID
+FROM  
+    BibliographicRecords br (nolock)
+JOIN 
+    BibliographicTags bt (nolock) ON br.BibliographicRecordID = bt.BibliographicRecordID
+JOIN 
+    BibliographicSubfields bs (nolock) ON bt.BibliographicTagID = bs.BibliographicTagID
+WHERE 
+    CAST(br.CreationDate AS DATE) != '2022-08-24'
