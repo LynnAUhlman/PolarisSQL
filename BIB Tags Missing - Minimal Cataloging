@@ -1,6 +1,8 @@
 SELECT
 cir.AssociatedBibRecordId,
 br.PrimaryMARCTOMID,
+/*bii.ISBNString,*/
+cir.Barcode
 tom.Description,
 cir.MaterialTypeId, 
 mt.Description,
@@ -12,6 +14,7 @@ sl.Description
 FROM 
 circItemRecords cir (nolock)
 JOIN BibliographicRecords br (nolock) on cir.AssociatedBibRecordID = br.BibliographicRecordID
+/*JOIN BibliographicISBNIndex  bii (nolock) on br.BibliographicRecordID = bii.BibliographicRecordID*/
 JOIN MARCTypeOfMaterial tom (nolock) on br.PrimaryMARCTOMID = tom.MARCTypeOfMaterialID
 JOIN MaterialTypes mt (nolock) on cir.MaterialTypeID = mt.MaterialTypeID
 RIGHT OUTER JOIN Collections col (nolock) on cir.AssignedCollectionID = col.CollectionID
