@@ -2,7 +2,7 @@ SELECT
 cir.AssociatedBibRecordId,
 br.PrimaryMARCTOMID,
 /*bii.ISBNString,*/
-cir.Barcode
+cir.Barcode,
 tom.Description,
 cir.MaterialTypeId, 
 mt.Description,
