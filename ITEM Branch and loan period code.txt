@@ -1,0 +1,12 @@
+===================================
+ITEM Branch and LoanPeriodCodeID
+===================================
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+AssignedBranchID = 5 AND
+LoanPeriodCodeID != 7

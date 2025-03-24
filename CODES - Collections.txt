@@ -1,0 +1,17 @@
+SELECT
+oc.OrganizationID,
+o.Name,
+oc.CollectionID,
+c.Abbreviation,
+c.Name
+
+FROM
+Polaris.OrganizationsCollections oc WITH (NOLOCK)
+
+INNER JOIN
+Organizations o WITH (NOLOCK) ON
+	o.OrganizationID = oc.OrganizationID
+
+INNER JOIN
+Collections c WITH (NOLOCK) ON
+	c.CollectionID = oc.CollectionID

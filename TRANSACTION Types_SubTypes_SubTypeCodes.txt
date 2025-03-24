@@ -1,0 +1,26 @@
+SELECT
+tr.TransactionTypeID,
+tt.TransactionTypeDescription,
+tt.Mnemonic,
+tt.SysAdminuseTransaction,
+tt.IsImplemented,
+tr.TransactionsubTypeID,
+ts.TransactionSubTypeDescription,
+ts.DataType,
+ts.Mnemonic,
+ts.IsImplemented,
+tsc.TransactionSubTypeCode,
+tsc.TransactionSubTypeCodeDesc
+
+FROM
+PolarisTransactions.Polaris.TransactionRules tr WITH (NOLOCK)
+
+INNER JOIN
+	PolarisTransactions.Polaris.TransactionTypes tt WITH (NOLOCK) 
+		ON tt.TransactionTypeID = tr.TransactionTypeID
+INNER JOIN
+	PolarisTransactions.Polaris.TransactionSubTypes ts WITH (NOLOCK) 
+		ON ts.TransactionSubTypeID = tr.TransactionSubTypeID
+INNER JOIN
+	PolarisTransactions.Polaris.TransactionSubTypeCodes tsc WITH (NOLOCK)
+		ON tsc.TransactionSubTypeID = tr.TransactionSubTypeID

@@ -1,0 +1,12 @@
+SELECT
+it.OrganizationOwnerID,
+o.Name,
+it.ItemTemplateID,
+it.Name
+
+FROM
+Polaris.ItemTemplates  it WITH (NOLOCK)
+
+INNER JOIN
+Organizations o WITH (NOLOCK) ON
+	o.OrganizationID = it.OrganizationOwnerID

@@ -1,0 +1,9 @@
+DECLARE @tmpTbl TABLE( PatronCodeID INT, Description VARCHAR(1024))
+
+INSERT INTO @tmpTbl
+SELECT PatronCodeID, Description 
+FROM Polaris.PatronCodes WITH(NOLOCK)
+
+SELECT PatronCodeID, Description, NTILE(2) OVER (ORDER BY PatronCodeID) AS Rank
+FROM @tmpTbl
+ORDER BY PatronCodeID

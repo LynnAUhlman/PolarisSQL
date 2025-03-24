@@ -1,0 +1,19 @@
+SELECT 
+    f.FundID,
+    f.Name AS FundName,
+    f.AlternativeName,
+    CONCAT(f.ParentFundID, ' - ', pf.Name) AS ParentFundName, 
+    f.OrganizationID,
+	CONCAT(ft.TypeID, '-', ft.Type) AS FundType
+
+FROM 
+    Polaris.Funds f WITH (NOLOCK)
+LEFT JOIN 
+    Polaris.Funds pf WITH (NOLOCK) 
+    ON f.ParentFundID = pf.FundID  
+LEFT JOIN
+    Polaris.FundTypes ft WITH (NOLOCK)
+	ON f.TypeID = ft.TypeID
+	
+WHERE 
+    f.OrganizationID = 3;

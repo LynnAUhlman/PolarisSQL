@@ -1,0 +1,14 @@
+SELECT
+ibd.ItemBlockID,
+ibd.Description,
+ibd.OrganizationID,
+o.Name,
+o.DisplayName
+
+
+FROM
+polaris.ItemBlockDescriptions  ibd WITH (NOLOCK)
+
+INNER JOIN
+Organizations o WITH (NOLOCK) ON
+	o.OrganizationID = ibd.OrganizationID
