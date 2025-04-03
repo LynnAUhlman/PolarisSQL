@@ -1,0 +1,52 @@
+---created by Daniel Messer
+
+SELECT TOP 40 -- Pulls the top 40 titles, adjust as needed
+    br.BibliographicRecordID AS [BibliographicRecordID],
+    br.BrowseTitle AS [Title],
+    br.BrowseAuthor AS [Author],
+    material.numValue AS [MaterialTypeID],
+    mat.Description AS [Material Type],
+    shelfloc.numValue AS [ShelfLocationID],
+    sl.Description AS [Shelf Location],
+    COUNT(shelfloc.numValue) AS [Circ Count]
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+INNER JOIN -- Get the MaterialTypeID
+    PolarisTransactions.Polaris.TransactionDetails material WITH (NOLOCK)
+    ON (th.TransactionID = material.TransactionID AND material.TransactionSubTypeID = 4)
+LEFT JOIN -- Get the ShelfLocationID if it's there
+    PolarisTransactions.Polaris.TransactionDetails shelfloc WITH (NOLOCK)
+    ON (th.TransactionID = shelfloc.TransactionID AND shelfloc.TransactionSubTypeID = 296)
+INNER JOIN -- Get the ItemRecordID
+    PolarisTransactions.Polaris.TransactionDetails item WITH (NOLOCK)
+    ON (th.TransactionID = item.TransactionID AND item.TransactionSubTypeID = 38)
+LEFT JOIN -- Get item record information
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK)
+    ON (cir.ItemRecordID = item.numValue)
+LEFT JOIN -- Get bibliographic record information
+    Polaris.Polaris.BibliographicRecords br WITH (NOLOCK)
+    ON (br.BibliographicRecordID = cir.AssociatedBibRecordID)
+INNER JOIN -- Get material type information
+    Polaris.Polaris.MaterialTypes mat WITH (NOLOCK)
+    ON (mat.MaterialTypeID = material.numValue)
+LEFT JOIN -- Get shelf location information
+    Polaris.Polaris.ShelfLocations sl WITH (NOLOCK)
+    ON (sl.ShelfLocationID = shelfloc.numValue)
+WHERE -- Check outs
+    th.TransactionTypeID = 6001
+AND -- Adjust dates as needed
+    th.TranClientDate BETWEEN '2024-01-01 00:00:00.000' AND '2024-12-31 23:59:59.999'
+AND -- Exclude shelf locations if needed
+    shelfloc.numValue NOT IN (151)
+AND -- Exclude deleted bibs
+    br.BibliographicRecordID IS NOT NULL
+GROUP BY
+    br.BibliographicRecordID,
+    br.BrowseTitle,
+    br.BrowseAuthor,
+    material.numValue,
+    mat.Description,
+    shelfloc.numValue,
+    sl.Description
+ORDER BY
+    COUNT(shelfloc.numValue) DESC
