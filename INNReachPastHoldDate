@@ -1,0 +1,6 @@
+SELECT
+  ill.illrequestid
+FROM
+  polaris.polaris.illrequests ill (nolock)
+  JOIN polaris.polaris.innreachrequests inr (nolock) ON ill.illrequestid = inr.ILLRequestID 
+WHERE illstatusid = 10 and HoldTillDate < getdate()
