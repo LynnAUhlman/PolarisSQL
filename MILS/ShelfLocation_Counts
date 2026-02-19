@@ -1,0 +1,14 @@
+SELECT o.Name AS ItemBranchName, sl.Description AS ShelfLocationDescription, count(*) AS NumberOfItems
+FROM Polaris.CircItemRecords cir WITH (NOLOCK)
+INNER JOIN Polaris.ItemRecordDetails ird WITH (NOLOCK)
+  ON (cir.ItemRecordID = ird.ItemRecordID)
+INNER JOIN Polaris.Organizations o WITH (NOLOCK)
+  ON (cir.AssignedBranchID = o.OrganizationID)
+LEFT JOIN Polaris.ShelfLocations sl WITH (NOLOCK)
+  ON (cir.ShelfLocationID = sl.ShelfLocationID
+   AND cir.AssignedBranchID = sl.OrganizationID)    
+ WHERE cir.AssignedBranchID NOT IN (24,39)
+   AND cir.ILLFlag = 0
+   AND cir.RecordStatusID = 1
+ GROUP BY o.Name,sl.Description
+ ORDER BY ItemBranchName asc,ShelfLocationDescription asc, count(*) desc;
