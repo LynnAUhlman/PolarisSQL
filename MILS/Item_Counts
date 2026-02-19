@@ -6,9 +6,9 @@ Item Counts
 
 
 SELECT o.Name AS AssignedBranch, sc.Description AS StatisticalCodeName, COUNT(DISTINCT cir.ItemRecordID) AS ItemCount 
-FROM CircItemRecords cir 
-INNER JOIN Organizations o ON cir.AssignedBranchID = o.OrganizationID
-INNER JOIN StatisticalCodes sc ON cir.StatisticalCodeID = sc.StatisticalCodeID
+FROM CircItemRecords cir WITH (NOLOCK)
+INNER JOIN Organizations o WITH (NOLOCK) ON cir.AssignedBranchID = o.OrganizationID
+INNER JOIN StatisticalCodes sc WITH (NOLOCK) ON cir.StatisticalCodeID = sc.StatisticalCodeID
 WHERE cir.RecordStatusID = 1
   AND cir.ItemStatusID NOT IN (7,10,11)
   AND cir.ILLFlag = 0
