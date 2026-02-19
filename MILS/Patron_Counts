@@ -1,0 +1,19 @@
+/*
+Lynn Uhlman
+Maine InfoNet
+Patron Counts
+*/
+
+SELECT o.Name, pc.Description, COUNT(DISTINCT p.PatronID) AS PatronCount
+FROM Patrons p WITH (NOLOCK)
+INNER JOIN PatronRegistration pr WITH (NOLOCK)
+  ON p.PatronID = pr.PatronID
+INNER JOIN Organizations o WITH (NOLOCK)
+  ON p.OrganizationID = o.OrganizationID
+INNER JOIN PatronCodes pc WITH (NOLOCK)
+  ON p.PatronCodeID = pc.PatronCodeID
+WHERE pr.ExpirationDate IS NOT NULL
+  AND pr.ExpirationDate >= DATEADD(YEAR, -3, CAST(GETDATE() AS DATE))
+  AND p.RecordStatusID = 1
+GROUP BY o.Name, pc.Description
+ORDER BY o.Name, pc.Description;
