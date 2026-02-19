@@ -1,0 +1,17 @@
+/*
+Lynn Uhlman
+Maine InfoNet
+Bib Counts
+*/
+
+
+SELECT 
+    cir.AssignedBranchID, o.Name,
+    COUNT(DISTINCT b.BibliographicRecordID) AS FinalBibCount
+FROM BibliographicRecords b
+INNER JOIN CircItemRecords cir
+    ON b.BibliographicRecordID = cir.AssociatedBibRecordID
+INNER JOIN Organizations o ON cir.AssignedBranchID = o.OrganizationID
+WHERE b.RecordStatusID = 1
+GROUP BY cir.AssignedBranchID, o.Name
+ORDER BY cir.AssignedBranchID;
