@@ -1,3 +1,10 @@
+/*
+Lynn Uhlman
+Maine InfoNet
+Shelf Location Counts
+*/
+
+
 SELECT o.Name AS ItemBranchName, sl.Description AS ShelfLocationDescription, count(*) AS NumberOfItems
 FROM Polaris.CircItemRecords cir WITH (NOLOCK)
 INNER JOIN Polaris.ItemRecordDetails ird WITH (NOLOCK)
