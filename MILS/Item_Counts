@@ -5,11 +5,12 @@ Item Counts
 */
 
 
-SELECT cir.AssignedBranchID, o.Name AS AssignedBranch, cir.StatisticalCodeID, sc.Description AS StatisticalCodeName, COUNT(DISTINCT cir.ItemRecordID) AS ItemCount 
+SELECT o.Name AS AssignedBranch, sc.Description AS StatisticalCodeName, COUNT(DISTINCT cir.ItemRecordID) AS ItemCount 
 FROM CircItemRecords cir 
 INNER JOIN Organizations o ON cir.AssignedBranchID = o.OrganizationID
 INNER JOIN StatisticalCodes sc ON cir.StatisticalCodeID = sc.StatisticalCodeID
 WHERE cir.RecordStatusID = 1
   AND cir.ItemStatusID NOT IN (7,10,11)
-GROUP BY cir.AssignedBranchID, o.Name, cir.StatisticalCodeID, sc.Description
-ORDER BY cir.AssignedBranchID, o.Name, cir.StatisticalCodeID, sc.Description;
+  AND cir.ILLFlag = 0
+GROUP BY o.Name, sc.Description
+ORDER BY o.Name, sc.Description;
