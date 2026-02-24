@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 # Server connection details and authentication credentials
 
 BASE_URL = "https://mils.polarislibrary.com/reports"
-USERNAME = "DOMAIN\\username"
+USERNAME = "username"
 PASSWORD = "your_password"
 
 
@@ -144,4 +144,5 @@ def main():
 # Execute script when run directly
 
 if __name__ == "__main__":
+
     main()
