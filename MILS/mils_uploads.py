@@ -1,27 +1,29 @@
-# Import required libraries for file handling, encoding, HTTP requests, authentication, and date logic
-
 import os
 import sys
 import base64
+import configparser
 import requests
 from requests_ntlm import HttpNtlmAuth
 from datetime import datetime, timedelta
 
 
-# Server connection details and authentication credentials
+# Determine script directory dynamically
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-BASE_URL = "https://mils.polarislibrary.com/reports"
-USERNAME = "username"
-PASSWORD = "your_password"
+# Load configuration from config.ini
+config = configparser.ConfigParser()
+config.read(os.path.join(BASE_DIR, "config.ini"))
+
+BASE_URL = config["ssrs"]["base_url"]
+USERNAME = config["ssrs"]["username"]
+PASSWORD = config["ssrs"]["password"]
 
 
-# Local directory where the monthly CSV reports are stored
-
+# Local directory where monthly Excel reports are stored
 REPORTS_DIR = r"C:\Scripts\Polaris\mils_monthly\Reports"
 
 
 # Mapping of report file prefixes to their corresponding SSRS folder destinations
-
 UPLOAD_MAP = {
     "Item_Count": "/Polaris/Custom/MILS TOP HITS/Item Counts",
     "Patron_Count": "/Polaris/Custom/MILS TOP HITS/Patron Counts",
@@ -30,12 +32,9 @@ UPLOAD_MAP = {
 }
 
 
-# Runtime control flag for testing without performing actual uploads
-
+# Runtime control flag
 DRY_RUN = "--dry-run" in sys.argv
 
-
-# Determine the previous month in YYYYMM format (handles year rollover correctly)
 
 def get_previous_month_string():
     today = datetime.today()
@@ -44,19 +43,14 @@ def get_previous_month_string():
     return previous_month_last_day.strftime("%Y%m")
 
 
-# Locate the expected monthly report file based on prefix and previous month
-
 def find_file(prefix, month_suffix):
-    expected_name = f"{prefix}_{month_suffix}.csv"
+    expected_name = f"{prefix}_{month_suffix}.xlsx"
     file_path = os.path.join(REPORTS_DIR, expected_name)
 
     if os.path.exists(file_path):
         return expected_name
-    else:
-        return None
+    return None
 
-
-# Upload a file to the SSRS Reports server as a Resource item
 
 def upload_file(session, file_name, folder_path):
 
@@ -75,50 +69,25 @@ def upload_file(session, file_name, folder_path):
     payload = {
         "Name": file_name,
         "Path": f"{folder_path}/{file_name}",
-        "Type": "Resource",
         "Content": encoded_content,
-        "ContentType": "text/csv"
+        "ContentType": "application/octet-stream"
     }
 
-    url = f"{BASE_URL}/api/v2.0/CatalogItems"
+    # Use ExcelWorkbooks endpoint
+    url = f"{BASE_URL}/api/v2.0/ExcelWorkbooks"
     response = session.post(url, json=payload)
 
     if response.status_code in (200, 201):
         print(f"Uploaded: {file_name}")
+
     elif response.status_code == 409:
-        print(f"File exists. Attempting overwrite: {file_name}")
-        overwrite_file(session, file_name, folder_path, encoded_content)
+        print(f"Skipped (already exists): {file_name}")
+
     else:
         print(f"Upload failed: {file_name}")
         print(response.status_code)
         print(response.text)
 
-
-# Overwrite an existing Resource file if it already exists on the server
-
-def overwrite_file(session, file_name, folder_path, encoded_content):
-
-    item_path = f"{folder_path}/{file_name}"
-    encoded_path = requests.utils.quote(item_path, safe="")
-
-    url = f"{BASE_URL}/api/v2.0/CatalogItems(Path='{encoded_path}')"
-
-    payload = {
-        "Content": encoded_content,
-        "ContentType": "text/csv"
-    }
-
-    response = session.patch(url, json=payload)
-
-    if response.status_code == 200:
-        print(f"Overwritten: {file_name}")
-    else:
-        print(f"Overwrite failed: {file_name}")
-        print(response.status_code)
-        print(response.text)
-
-
-# Main workflow: determine month, establish session, locate files, and upload
 
 def main():
 
@@ -138,11 +107,8 @@ def main():
         if file_name:
             upload_file(session, file_name, folder_path)
         else:
-            print(f"File not found: {prefix}_{month_suffix}.csv")
+            print(f"File not found: {prefix}_{month_suffix}.xlsx")
 
-
-# Execute script when run directly
 
 if __name__ == "__main__":
-
     main()
