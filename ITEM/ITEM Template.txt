@@ -1,0 +1,34 @@
+SELECT
+	CONCAT(it.AssignedCollectionID, "--" , oc.description) AS AssignedCollection,
+	CONCAT(it.ShelfLocationID, "--" , sl.description) AS ShelfLocation,
+	CONCAT(it.MaterialTypeID, "--" , mt.description) AS MaterialType,
+	CONCAT(it.LoanPeriodCodeID, "--" , lpc.description) AS LoanPeriod,
+	CONCAT(it.FineCodeID, "--" , fc.description) AS FineCode,
+	it.RenewalLimit,
+	CONCAT(it.StatisticalCodeID, "--" , sc.description) AS StatCode,
+	it.NameOfPiece AS "Embargo?",
+	it.CallNumberPrefix,
+	it.ClassificationNumber,
+	it.CutterNumber,
+	it.CallNumberSuffix,
+	it.CopyNumber,
+	it.LoanableOutsideSystem,
+	it.Holdable,
+	it.HoldableByBranch,
+	CONCAT(it.AssignedBranchID, "--" , sl.description) AS Branch,
+	CONCAT(it.OrganizationOwnerID, "--" , o.description) AS Organization
+
+FROM
+	Polaris.ItemTemplates it(nolock)
+
+JOIN Polaris.Polaris.Organizations o(NOLOCK) ON o.OrganizationID = it.OrganizationOwnerID
+JOIN Polaris.Polaris.ShelfLocations sl(NOLOCK) ON sl.OrganizationID = it.AssignedBranchID
+JOIN Polaris.Polaris.ShelfLocations sl(NOLOCK) ON sl.OrganizationID = it.ShelfLocationID
+JOIN Polaris.Polaris.StatisticalCodes sc(NOLOCK) ON sc.StatisticalCodeID = it.StatisticalCodeID
+JOIN Polaris.Polaris.FineCodes fc(NOLOCK) ON fc.FineCodeID = it.FineCodeID
+JOIN Polaris.Polaris.LoanPeriodCodes lpc(NOLOCK) ON lpc.LoanPeriodCodeID = it.LoanPeriodCodeID
+JOIN Polaris.Polaris.MaterialTypes mt(NOLOCK) ON mt.MaterialTypeID = it.MaterialTypeID
+JOIN Polaris.Polaris.OrganizationsCollections oc(NOLOCK) ON oc.CollectionID = it.AssignedCollectionID
+
+WHERE
+it.OrganizationOwnerID = 34

@@ -1,0 +1,15 @@
+SELECT
+cir.ItemRecordId 
+
+FROM 
+polaris.polaris.CircItemRecords cir
+
+JOIN
+ItemRecordDetails ird on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE 
+cir.AssignedBranchID = 19 AND
+(cir.HoldableByPickup = 1 OR
+cir.HoldableByBranch = 1 OR
+cir.HoldableByLibrary = 1) AND
+ird.CreationDate BETWEEN '2023-03-01' AND '2023-06-05'

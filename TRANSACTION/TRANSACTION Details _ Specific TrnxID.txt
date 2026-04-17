@@ -1,0 +1,8 @@
+SELECT 
+    TD.TransactionTypeID,
+	TD.TransactionSubTypeID,
+	TD.numValue,
+	TD.dateValue
+
+FROM 
+    PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK)

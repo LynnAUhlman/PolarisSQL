@@ -1,0 +1,25 @@
+SELECT
+b.BibliographicRecordID,
+b.ModifierID ,
+pum.Name AS [Modifier],
+b.CreatorID,
+puc.Name AS [Creator],
+b.BrowseTitle,
+b.BrowseAuthor,
+b.ModificationDate,
+b.CreationDate,
+b.ModifiedByAuthorityJob,
+b.ImportedDate,
+b.ImportedFileName
+
+FROM
+BibliographicRecords b WITH (NOLOCK)
+
+LEFT JOIN PolarisUsers pum WITH (NOLOCK)
+  ON pum.ModifierID = b.ModifierID
+
+LEFT JOIN PolarisUsers puc WITH (NOLOCK)
+  ON puc.CreatorID = b.CreatorID
+	
+WHERE
+b.BibliographicRecordID = '502329'

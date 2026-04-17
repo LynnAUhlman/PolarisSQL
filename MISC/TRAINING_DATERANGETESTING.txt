@@ -1,0 +1,18 @@
+SELECT TOP 100 
+  p.Barcode AS "Barcode",
+  p.PatronID AS "Record #",
+  pr.PatronFirstLastName AS "Name",
+  CONVERT(VARCHAR, pr.RegistrationDate, 120) AS "Date",
+  o.Name AS "Registered Location",
+  pc.Description AS "Patron Code",
+  p.LifetimeCircCount AS "Total Checkouts"
+FROM 
+  Polaris.Polaris.Patrons p (nolock)
+  JOIN Polaris.Polaris.Organizations o (nolock) ON p.OrganizationID = o.OrganizationID
+  JOIN Polaris.Polaris.PatronCodes pc (nolock) ON p.PatronCodeID = pc.PatronCodeID
+  JOIN Polaris.Polaris.PatronRegistration pr (nolock) ON p.PatronID=pr.PatronID
+
+WHERE
+  pr.RegistrationDate <= DATEADD(DD,-14, GETDATE()) 
+
+ORDER BY 6 DESC,4,5 ;

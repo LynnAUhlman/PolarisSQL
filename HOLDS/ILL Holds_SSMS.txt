@@ -1,0 +1,63 @@
+SELECT
+    th.TranClientDate AS [Transaction Date],
+    illid.numValue AS [ILL Request ID],
+    tt.TransactionTypeDescription AS [Action],
+    title.TransactionString AS [Title],
+    tom.[Description] AS [Format],
+    illreq.StaffNotes1 AS [Staff Notes],
+    p.OrganizationID AS [Patron Library],
+    pr.PatronFullName AS [Patron Name]
+
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+
+INNER JOIN -- Pull the readable Transaction Type
+    PolarisTransactions.Polaris.TransactionTypes tt WITH (NOLOCK)
+    ON (tt.TransactionTypeID = th.TransactionTypeID)
+INNER JOIN -- Pull the ILL request ID
+    PolarisTransactions.Polaris.TransactionDetails illid WITH (NOLOCK)
+    ON (th.TransactionID = illid.TransactionID AND illid.TransactionSubTypeID = 177)
+INNER JOIN -- Pull the PatronID
+    PolarisTransactions.Polaris.TransactionDetails patron WITH (NOLOCK)
+    ON (th.TransactionID = patron.TransactionID AND patron.TransactionSubTypeID = 6)
+INNER JOIN -- Pull the Patron's OrganizationID
+    PolarisTransactions.Polaris.TransactionDetails patronorg WITH (NOLOCK)
+    ON (th.TransactionID = patronorg.TransactionID AND patronorg.TransactionSubTypeID = 13)
+INNER JOIN -- Pull the ILL destination branch
+    PolarisTransactions.Polaris.TransactionDetails illdest WITH (NOLOCK)
+    ON (th.TransactionID = illdest.TransactionID AND illdest.TransactionSubTypeID = 149)
+INNER JOIN -- Set up linkage from TransactionDetails to TransactionStrings to get ILL title
+    PolarisTransactions.Polaris.TransactionDetails titlelink WITH (NOLOCK)
+    ON (th.TransactionID = titlelink.TransactionID AND titlelink.TransactionSubTypeID = 49)
+INNER JOIN -- Pull the ILL's title
+    PolarisTransactions.Polaris.TransactionDetailStrings title WITH (NOLOCK)
+    ON (titlelink.numValue = title.TransactionStringID)
+INNER JOIN -- Use the PatronID in Patron Registration
+    Polaris.Polaris.PatronRegistration pr WITH (NOLOCK)
+    ON (pr.PatronID = patron.numValue)
+INNER JOIN -- Use the PatronID in Patrons
+    Polaris.Polaris.Patrons p WITH (NOLOCK)
+    ON (p.PatronID = patron.numValue)
+INNER JOIN -- Use the Patron's OrganizationID in Organizations
+    Polaris.Polaris.Organizations porg WITH (NOLOCK)
+    ON (porg.OrganizationID = patronorg.numValue)
+INNER JOIN -- Use the ILL destination OrganizationID in Organizations
+    Polaris.Polaris.Organizations borg WITH (NOLOCK)
+    ON (borg.OrganizationID = illdest.numValue)
+INNER JOIN -- Use the ILLRequestID to get Staff Notes 1
+    Polaris.Polaris.ILLRequests illreq WITH (NOLOCK)
+    ON (illreq.ILLRequestID = illid.numValue)
+LEFT JOIN -- Use the ILLRequestID to get the ItemRecordID
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK)
+    ON (illreq.ItemRecordID = cir.ItemRecordID)
+INNER JOIN
+    Polaris.Polaris.MARCTypeOfMaterial tom WITH (NOLOCK)
+    ON (tom.MARCTypeOfMaterialID = illreq.PrimaryMARCTOMID)
+
+WHERE -- ILL related transactions
+    th.TransactionTypeID IN (6033,6035,6036)
+AND -- Currently set to the start of last month and the end of last month. Adjust to suit.
+    th.TranClientDate BETWEEN dateadd(mm,datediff(m,0,getdate())-1,0) AND dateadd(s,-1,dateadd(mm, datediff(m,0,getdate()),0))
+ORDER BY
+    th.TranClientDate,
+    illid.numValue

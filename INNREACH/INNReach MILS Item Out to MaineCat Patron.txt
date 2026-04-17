@@ -1,0 +1,67 @@
+	CREATE TABLE #TempIRReport
+	(
+		PatronHomeLibrary NVARCHAR(50) NULL,
+		ItemRecordID INT,
+		CallNumber NVARCHAR(255) NULL,
+		ItemBarcode NVARCHAR(99) NULL,
+		Title NVARCHAR(255) NULL,
+		DueDate DATE NULL,
+		OwningLibrary NVARCHAR(50) NULL
+	)
+
+	INSERT INTO #TTempIRReport
+	(
+		PatronHomeLibrary,
+		ItemRecordID,
+		CallNumber,
+		ItemBarcode,
+		Title,
+		DueDate,
+		OwningLibrary
+	)
+	SELECT 
+		INR.PatronAgencyCode + N'-' + COALESCE(INR.PatronHomeLibrary, N'*Not Supplied*') AS PatronHomeLibrary, 
+		ITM.ItemRecordID,
+		DET.CallNumber,
+		ITM.Barcode AS ItemBarcode,
+		BIB.BrowseTitle AS Title,
+		CKO.DueDate,
+		ORG.Name AS OwningLibrary
+	FROM 
+		InnReachRequests INR WITH (NOLOCK)
+		INNER JOIN CircItemRecords ITM WITH (NOLOCK)
+			ON INR.ItemRecordID = ITM.ItemRecordID
+		INNER JOIN ItemRecordDetails DET WITH (NOLOCK)
+			ON ITM.ItemRecordID = DET.ItemRecordID
+		INNER JOIN BibliographicRecords BIB WITH (NOLOCK)                                  
+			ON ITM.AssociatedBibRecordID = BIB.BibliographicRecordID
+		INNER JOIN Organizations ORG WITH (NOLOCK)
+			ON ITM.AssignedBranchID = ORG.OrganizationID
+		INNER JOIN SysHoldRequests SHR WITH (NOLOCK)
+			ON INR.SysHoldRequestid = SHR.SysHoldRequestid
+		INNER JOIN ItemCheckouts CKO WITH (NOLOCK)
+			ON ITM.ItemRecordID = CKO.ItemRecordID
+	WHERE 
+		SHR.SysHoldStatusID = 17 --Out to Patron
+		AND INR.Local = 0 -- Exclude local requests
+		
+	ORDER BY ItemLocation, PatronHomeLibrary, DueDate
+
+	-- Get the record set
+	SELECT
+		ItemRecordID,
+		OwningLibrary,
+		CallNumber,
+		ItemBarcode,
+		Title,
+		PatronHomeLibrary,
+		DueDate
+	FROM #TempIRReport
+
+	ORDER BY 
+	OwningLibrary, PatronHomeLibrary, DueDate
+
+	DROP TABLE #TempIRReport
+
+
+	RETURN

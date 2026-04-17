@@ -1,0 +1,51 @@
+--Item Record Set Data Based on Organization Owner 
+---original from dmesser
+
+SELECT
+    rs.RecordSetID AS [Record Set ID],
+    rs.Name AS [Record Set Name],
+    br.BrowseTitle AS [Browse Title],
+    o.Name AS [Record Set Owner],
+    c.Name AS [Collection],
+    mat.Description AS [Material Type],
+    br.BrowseAuthor AS [Browse Author],
+    br.BrowseCallNo AS [Call Number],
+    ird.VolumeNumber AS [Volume],
+    ist.Description AS [Circ Status],
+    cir.Barcode AS [Item Barcode],
+    cir.LastCircTransactionDate AS [Last Circ Transaction],
+    irs.ItemRecordID AS [Item Record ID]
+
+FROM
+    Polaris.Polaris.RecordSets rs WITH (NOLOCK)
+
+INNER JOIN
+    Polaris.Polaris.ItemRecordSets irs WITH (NOLOCK) ON irs.RecordSetID = rs.RecordSetID
+	
+INNER JOIN
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK) ON irs.ItemRecordID = cir.ItemRecordID
+	
+INNER JOIN
+    Polaris.Polaris.Collections c WITH (NOLOCK) ON c.CollectionID = cir.AssignedCollectionID
+	
+INNER JOIN
+    Polaris.Polaris.Organizations o WITH (NOLOCK) ON o.OrganizationID = rs.OrganizationOwnerID
+	
+INNER JOIN
+    Polaris.Polaris.MaterialTypes mat WITH (NOLOCK) ON mat.MaterialTypeID = cir.MaterialTypeID
+	
+INNER JOIN
+    Polaris.Polaris.BibliographicRecords br WITH (NOLOCK) ON br.BibliographicRecordID = cir.AssociatedBibRecordID
+	
+INNER JOIN
+    Polaris.Polaris.ItemRecordDetails ird WITH (NOLOCK) ON ird.ItemRecordID = cir.ItemRecordID
+	
+INNER JOIN
+    Polaris.Polaris.ItemStatuses ist WITH (NOLOCK) ON ist.ItemStatusID = cir.ItemStatusID
+
+WHERE
+    rs.ObjectTypeID = 3 -- Item Records specifically  AND
+    rs.OrganizationOwnerID IN ()   --- Put in your OrganizationID here to select owners
+
+ORDER BY
+    [Record Set Name] ASC

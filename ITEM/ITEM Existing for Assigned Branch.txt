@@ -1,0 +1,23 @@
+SELECT
+    cir.AssociatedBibRecordID,
+	cir.ItemRecordID,
+	cir.Barcode,
+    br.BrowseTitle,
+    ird.CallNumber,
+    cir.RecordStatusID,
+    ab.DisplayName AS [Assigned Location]
+
+FROM
+    CircItemRecords cir (nolock)
+
+JOIN
+    ItemRecordDetails ird (nolock) on cir.ItemRecordID = ird.ItemRecordID
+JOIN
+    BibliographicRecords br (nolock) on cir.AssociatedBibRecordID = br.BibliographicRecordID
+JOIN
+    Organizations ab (nolock) on cir.AssignedBranchID = ab.OrganizationID
+
+WHERE
+    cir.AssignedBranchID = 36
+
+

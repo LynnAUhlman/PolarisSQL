@@ -1,0 +1,17 @@
+SELECT
+    tr.TransactionTypeID,
+    tt.TransactionTypeDescription,
+    tr.TransactionSubTypeID,
+    ts.TransactionSubTypeDescription
+
+FROM
+    PolarisTransactions.Polaris.TransactionRules tr WITH (NOLOCK)
+
+INNER JOIN
+    PolarisTransactions.Polaris.TransactionTypes tt WITH (NOLOCK) ON tt.TransactionTypeID = tr.TransactionTypeID
+
+INNER JOIN
+    PolarisTransactions.Polaris.TransactionSubTypes ts WITH (NOLOCK) ON ts.TransactionSubTypeID = tr.TransactionSubTypeID
+	
+WHERE
+    tr.TransactionTypeID = 6033

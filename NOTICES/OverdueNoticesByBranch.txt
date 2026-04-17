@@ -1,0 +1,34 @@
+SELECT 
+nq.PatronID,
+convert(varchar(20), cir.Barcode) as ItemBarcode,
+convert(varchar(255), br.BrowseTitle) as Title,
+convert(varchar(10), ic.DueDate, 120) as DueDate,
+cir.ItemRecordID,
+ic.Renewals,
+br.BibliographicRecordID,
+cir.RenewalLimit,
+nq.NotificationTypeID AS NoticeType,
+do.DeliveryOption AS NoticeMethod,
+o.Name AS "Library",
+convert(varchar(20), p.Barcode) as PatronBarcode, 
+pr.PatronFirstLastName AS "Name",
+pr.PhoneVoice1 AS Phone1,
+pr.PhoneVoice2 AS Phone2
+
+FROM
+Results.Polaris.NotificationQueue nq (nolock)
+join Polaris.Patrons p (nolock) on nq.PatronID=p.PatronID
+join Polaris.Organizations o on p.OrganizationID=o.OrganizationID
+join Polaris.PatronRegistration pr on nq.PatronID=pr.PatronID
+join Polaris.DeliveryOptions do on pr.DeliveryOptionID=do.DeliveryOptionID
+join Polaris.ItemCheckouts ic (nolock) on nq.PatronId=ic.PatronID and nq.ItemRecordId=ic.ItemRecordID
+join Polaris.CircItemRecords cir (nolock) on ic.ItemRecordID=cir.ItemRecordID
+join Polaris.BibliographicRecords br (nolock) on cir.AssociatedBibRecordID=br.BibliographicRecordID
+
+WHERE  
+nq.NotificationTypeId in (1,12,13) AND
+nq.CreationDate>GETDATE()-1 AND
+nq.ReportingOrgID = 19
+
+ORDER BY
+nq.PatronID

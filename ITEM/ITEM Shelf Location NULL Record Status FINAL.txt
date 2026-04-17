@@ -1,0 +1,11 @@
+---ITEM shelf location is NULL and record status is FINAL
+
+SELECT
+ItemRecordId
+
+FROM
+CircItemRecords
+
+WHERE
+ShelfLocationID IS NULL AND
+RecordStatusID = 1

@@ -1,0 +1,8 @@
+SELECT
+PatronId
+
+FROM
+PatronRegistration
+
+WHERE
+ExpirationDate <= '2020-05-31' AND 

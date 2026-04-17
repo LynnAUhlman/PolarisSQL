@@ -1,9 +1,0 @@
-SELECT
-ItemRecordId 
-
-FROM 
-CircItemRecords
-
-WHERE 
-AssignedBranchID = 20 AND
-FineCodeID != 1 

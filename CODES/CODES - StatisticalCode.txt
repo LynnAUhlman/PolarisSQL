@@ -1,0 +1,12 @@
+SELECT
+sc.StatisticalCodeID,
+sc.Description,
+sc.OrganizationID,
+o.Name
+
+FROM
+Polaris.StatisticalCodes  sc WITH (NOLOCK)
+
+INNER JOIN
+Organizations o WITH (NOLOCK) ON
+	o.OrganizationID = sc.OrganizationID

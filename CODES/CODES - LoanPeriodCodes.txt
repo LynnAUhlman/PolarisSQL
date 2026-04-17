@@ -1,0 +1,6 @@
+SELECT
+lpc.LoanPeriodCodeID,
+lpc.Description
+
+FROM
+polaris.LoanPeriodCodes lpc WITH (NOLOCK)

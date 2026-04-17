@@ -1,0 +1,12 @@
+===================================
+ITEM Control No. List
+===================================
+
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+ItemRecordID IN ('12230', '12463', '13121')

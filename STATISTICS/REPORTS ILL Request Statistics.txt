@@ -1,0 +1,48 @@
+DECLARE @StartDate DATETIME
+DECLARE @EndDate DATETIME
+
+SET @StartDate = '2024-01-01 00:00:00.000'
+SET @EndDate = '2024-06-30 23:59:59.999'
+
+SELECT TH.TransactionTypeID, 
+	TH.TranClientDate as TransactionDate, 
+	TH.WorkstationID, 
+	W.ComputerName,
+	TD.NumValue as PatronCode,
+	PC.Description,
+	TD1.NumvAlue as PatronOrganizationID,
+	O.Name as PatronLibrary,
+	O2.Name as TransactionOrgName,
+	Pickup.OrganizationID,
+	Pickup.Name as PickupLibrary
+		
+FROM PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK)
+
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK)
+		ON TH.TransactionID = TD.TransactionID AND TD.TransactionSubTypeID = 7
+		
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD1 WITH (NOLOCK)
+		ON TH.TransactionID = TD1.TransactionID AND TD1.TransactionSubTypeID = 13
+		
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD2 WITH (NOLOCK)
+		ON TH.TransactionID = TD2.TransactionID AND TD2.TransactionSubTypeID = 149
+		
+INNER JOIN Polaris.Organizations O WITH (NOLOCK)
+		ON TD1.numvalue = O.OrganizationID
+		
+INNER JOIN Polaris.Organizations Pickup WITH (NOLOCK)
+		ON TD2.numvalue = Pickup.OrganizationID
+		
+INNER JOIN Polaris.PatronCodes PC WITH (NOLOCK)
+		ON TD.numValue = PC.PatronCodeID
+		
+INNER JOIN Polaris.Organizations O2 WITH (NOLOCK)
+		ON TH.OrganizationID = O2.OrganizationID
+		
+INNER JOIN Polaris.Workstations W WITH (NOLOCK)
+		ON TH.WorkstationID = W.WorkstationID					
+		
+WHERE 
+	TH.TransactionTypeID = 6033
+AND
+    TH.TranClientDate BETWEEN @StartDate AND @EndDate

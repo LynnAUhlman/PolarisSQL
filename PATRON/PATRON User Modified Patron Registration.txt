@@ -1,0 +1,37 @@
+---created by Daniel Messer
+
+SELECT
+    th.TransactionID,
+    th.TranClientDate AS [Date],
+    o.Name AS [Modified At],
+    pu.Name AS [Modified By],
+    w.DisplayName AS [Workstation],
+    patron.numValue AS [PatronID],
+    pr.PatronFullName AS [Patron Name],
+    leap.numValue AS [Modified via Leap]
+FROM
+    PolarisTransactions.Polaris.TransactionHeaders th WITH (NOLOCK)
+INNER JOIN -- Get the PatronID
+    PolarisTransactions.Polaris.TransactionDetails patron WITH (NOLOCK)
+    ON (th.TransactionID = patron.TransactionID AND patron.TransactionSubTypeID = 6)
+LEFT JOIN -- Find out what was modified via Leap
+    PolarisTransactions.Polaris.TransactionDetails leap WITH (NOLOCK)
+    ON (th.TransactionID = leap.TransactionID AND leap.TransactionSubTypeID = 315)
+INNER JOIN -- Get the patron name
+    Polaris.Polaris.PatronRegistration pr WITH (NOLOCK)
+    ON (pr.PatronID = patron.numValue)
+INNER JOIN -- Get the library name
+    Polaris.Polaris.Organizations o WITH (NOLOCK)
+    ON (o.OrganizationID = th.OrganizationID)
+INNER JOIN -- Get the staff member
+    Polaris.Polaris.PolarisUsers pu WITH (NOLOCK)
+    ON (pu.PolarisUserID = th.PolarisUserID)
+INNER JOIN -- Get the workstation
+    Polaris.Polaris.Workstations w WITH (NOLOCK)
+    ON (w.WorkstationID = th.WorkstationID)
+WHERE -- Pop in your PatronID here
+    patron.numValue = 2985799
+AND -- Patron registration modified
+    th.TransactionTypeID = 2003
+AND -- Adjust dates as desired
+    th.TranClientDate BETWEEN '2024-01-01 00:00:00.000' AND '2024-12-30 23:59:59.999'

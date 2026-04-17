@@ -1,0 +1,12 @@
+SELECT
+pr.PatronId
+
+FROM
+PatronRegistration pr
+
+JOIN patronaccount pa ON pr.patronid = pa.patronid
+
+WHERE
+pa.organizationID = 21 AND
+pr.RegistrationDate BETWEEN '12-01-2022' AND '01-06-2023'
+

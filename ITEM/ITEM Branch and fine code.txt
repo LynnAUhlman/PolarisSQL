@@ -1,0 +1,12 @@
+===================================
+ITEM Branch and fine code
+===================================
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+AssignedBranchID = 8 AND
+FineCodeID = 5

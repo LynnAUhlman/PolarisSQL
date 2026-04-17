@@ -1,8 +1,0 @@
-SELECT
-PatronID
-
-FROM
-PatronRegistration 
-
-WHERE
-barcode IN ('add barcodes in between apostrophes and separated by a comma', )

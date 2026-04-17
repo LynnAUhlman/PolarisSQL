@@ -1,0 +1,17 @@
+SELECT
+cir.ItemRecordID AS "Record #",
+cir.AssignedBranchID AS "Branch",
+cir.AssignedCollectionID AS "Collection",
+cir.MaterialTypeID AS "Mattype",
+cir.ShelfLocationID AS "Shelf Location",
+cir.Barcode AS "Barcode",
+cir.ItemStatusID AS "iStatus",
+cir.RecordStatusID AS "rStatus"
+
+FROM
+polaris.CircItemRecords (no lock) cir
+
+WHERE
+AssignedBranchID = 4 AND
+ShelfLocationID IN (2,13,52)  AND   
+RecordStatusID = 1

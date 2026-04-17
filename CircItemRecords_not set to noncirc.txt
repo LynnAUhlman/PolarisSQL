@@ -1,8 +1,0 @@
-SELECT
-ItemRecordId 
-FROM 
-CircItemRecords
-WHERE 
-LoanPeriodCodeID NOT IN ('1') and
-MaterialTypeID NOT IN ('11') and
-AssignedBranchID = 23

@@ -1,0 +1,15 @@
+---ITEM Shelf Location Count with NO despcription
+
+
+SELECT
+	cir.ShelfLocationID,
+	COUNT (cir.ItemRecordID)
+
+FROM
+	CircItemRecords cir (NOLOCK)
+
+GROUP BY
+	cir.ShelfLocationID
+
+ORDER BY
+	cir.ShelfLocationID

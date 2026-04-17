@@ -1,0 +1,13 @@
+SELECT 
+  --oc.Description AS "Library",
+  o.name AS "Library",
+  col.Name AS "Collection",
+  FORMAT(SUM(ird.Price), 'C', 'en-us') AS "Total Price" 
+FROM 
+  Polaris.Polaris.CircItemRecords cir (nolock)
+  JOIN Polaris.Polaris.ItemRecordDetails ird (nolock) ON cir.ItemRecordID = ird.ItemRecordID
+  JOIN Polaris.Polaris.Organizations o (nolock) ON cir.AssignedBranchID = o.OrganizationID
+  JOIN Polaris.Polaris.Collections col (nolock) ON cir.AssignedCollectionID = col.CollectionID
+  
+GROUP BY  o.Name, col.Name
+ORDER BY 1,2;

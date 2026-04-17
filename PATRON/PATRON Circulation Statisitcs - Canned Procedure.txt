@@ -1,0 +1,45 @@
+SELECT distinct
+
+	O.OrganizationID,
+
+	O.Name,
+
+	TH.TranClientDate as TransactionDate,
+
+	TH.TransactionTypeID,
+
+	TD.TransactionID,
+
+	TD.Numvalue,
+
+	PC.Description
+
+		FROM
+
+	PolarisTransactions.Polaris.TransactionDetails TD with (NOLOCK)
+
+	INNER JOIN PolarisTransactions.Polaris.TransactionHeaders TH with (NOLOCK)
+
+		ON (TD.TransactionID = TH.TransactionID and TD.TransactionSubTypeID = 7 )
+
+	INNER JOIN #Branches B
+
+		ON(TH.OrganizationID = B.OrganizationID)
+
+	INNER JOIN Polaris.Organizations O with (NOLOCK)
+
+		ON(TH.OrganizationID = O.OrganizationID)
+
+	INNER JOIN Polaris.PatronCodes PC with (NOLOCK)
+
+		ON (PC.PatronCodeID = TD.NumValue)
+
+		WHERE
+
+	TH.TranClientDate between @dtBeginDate and @dtEndDate and
+
+	TH.TransactionTypeID = 6001
+
+		ORDER BY
+
+	O.Name, PC.Description

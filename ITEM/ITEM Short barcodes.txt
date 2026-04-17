@@ -1,0 +1,10 @@
+SELECT
+    c.ItemRecordID
+FROM
+    CircItemRecords c (nolock)
+WHERE
+    LEN(c.Barcode) <> 14
+AND 
+    c.AssignedBranchID = 34
+AND 
+    c.RecordStatusID = 1

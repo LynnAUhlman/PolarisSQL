@@ -1,0 +1,23 @@
+---pulls a list using collection, the material type description, and a count for entire system
+
+SELECT 
+	c.Name AS "Collection Name", 
+	mt.Description AS "Material Type",
+	count(cir.MaterialTypeID) AS "Material Type Count"
+	
+FROM 
+	polaris.polaris.CircItemRecords cir 
+	
+JOIN 
+	polaris.polaris.Collections c ON c.CollectionID = cir.AssignedCollectionID 
+	
+JOIN
+	polaris.polaris.MaterialTypes mt ON cir.MaterialTypeID = mt.MaterialTypeID 
+	  
+GROUP BY 
+	c.Name, 
+	cir.MaterialTypeID, 
+	mt.Description 
+	
+ORDER BY
+	count(cir.materialtypeid)

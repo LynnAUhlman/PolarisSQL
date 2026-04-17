@@ -1,0 +1,25 @@
+SELECT
+cir.ItemRecordID AS "Record #",
+cir.AssignedBranchID AS "Branch",
+cir.AssignedCollectionID AS "Collection",
+cir.MaterialTypeID AS "Mattype",
+cir.ShelfLocationID AS "Shelf Location",
+cir.Barcode AS "Barcode",
+cir.ItemStatusID AS "iStatus",
+cir.RecordStatusID AS "rStatus",
+ird.CallNumber AS "Call Number String",
+ird.CallNumberPrefix AS "Prefix",
+ird.ClassificationNumber AS "Call #",
+ird.CutterNumber AS "Cutter",
+ird.CallNumberSuffix AS "Suffix"
+
+FROM 
+polaris.polaris.CircItemRecords (NoLock) cir
+
+JOIN
+ItemRecordDetails ird (NoLock) on ird.ItemRecordID = cir.ItemRecordID
+
+WHERE 
+cir.AssignedBranchID = 31 AND
+cir.RecordstatusID = 1 AND
+ird.CutterNumber != ''

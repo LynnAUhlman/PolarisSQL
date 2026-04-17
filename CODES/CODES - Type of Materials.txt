@@ -1,0 +1,8 @@
+SELECT
+tom.MARCTypeOfMaterialID,
+tom.Description,
+tom.Precedence,
+tom.SearchCode
+
+FROM
+MARCTypeOfMaterial  tom WITH(NOLOCK)

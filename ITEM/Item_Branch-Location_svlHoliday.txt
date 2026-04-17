@@ -1,0 +1,31 @@
+SELECT
+	cir.ItemRecordID AS "Record #",
+	cir.AssignedBranchID AS "Branch",
+	cir.AssignedCollectionID AS "Collection",
+	cir.MaterialTypeID AS "Mattype",
+	cir.ShelfLocationID AS "Shelf Location",
+	cir.Barcode AS "Barcode",
+	cir.ItemStatusID AS "iStatus",
+	cir.RecordStatusID AS "rStatus",
+	ird.CallNumber AS "Call Number"
+
+FROM
+    Polaris.Polaris.CircItemRecords cir WITH (NOLOCK)
+
+INNER JOIN
+    Polaris.Polaris.ItemRecordDetails ird WITH (NOLOCK) ON ird.ItemRecordID = cir.ItemRecordID
+	
+WHERE
+	cir.ShelfLocationID = 81 -- Holiday shelf location AND
+    cir.AssignedBranchID = 15 -- svl OrganizationID 
+
+GROUP BY
+    cir.AssignedBranchID,
+	cir.ShelfLocationID,
+	ird.CallNumber,
+	cir.AssignedCollectionID,
+	cir.ItemRecordID,
+	cir.MaterialTypeID,
+	cir.Barcode,
+	cir.ItemStatusID,
+	cir.RecordStatusID

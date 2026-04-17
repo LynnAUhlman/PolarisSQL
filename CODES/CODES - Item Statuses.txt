@@ -1,0 +1,8 @@
+SELECT
+ItemStatusID,
+Description,
+Name,
+BannerText
+
+FROM
+Polaris.ItemStatuses

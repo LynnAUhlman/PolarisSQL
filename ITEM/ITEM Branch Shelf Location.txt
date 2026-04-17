@@ -1,0 +1,12 @@
+===================================
+ITEM Branch and Shelf Location
+===================================
+SELECT
+ItemRecordId 
+
+FROM 
+CircItemRecords
+
+WHERE 
+AssignedBranchID = 8 AND
+ShelfLocationID = 8
