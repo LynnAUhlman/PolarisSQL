@@ -16,7 +16,7 @@ WHERE
 AND
     th.TranClientDate BETWEEN '2025-07-01 00:00:00.000' AND '2025-12-31 23:59:59.999' -- Set your date range
 AND
-    th.OrganizationID IN (2,3,4,5,6,109,111) -- Limit to organizations
+    th.OrganizationID IN (2,3,4,5,6) -- Limit to organizations
 AND
     td2.numValue IN (1,2,3,4,5,6,7,8,9,10) -- Limit to given StatCodeIDs
 
