@@ -1,0 +1,18 @@
+SELECT
+    cir.AssociatedBibRecordId
+FROM 
+    CircItemRecords cir WITH (NOLOCK)
+JOIN 
+    BibliographicRecords br WITH (NOLOCK) 
+    ON cir.AssociatedBibRecordID = br.BibliographicRecordID
+JOIN 
+    BibliographicTags bt WITH (NOLOCK) 
+    ON br.BibliographicRecordID = bt.BibliographicRecordID
+JOIN 
+    BibliographicSubfields bs WITH (NOLOCK) 
+    ON bt.BibliographicTagID = bs.BibliographicTagID
+WHERE
+    bt.TagNumber = '040' -- Ensure tag is treated as a string if applicable
+    AND bs.Subfield = 'd'
+    AND bs.Data LIKE '%UtOrBLW%' -- Proper syntax for pattern matching
+	AND br.CreationDate > '09-01-2024'

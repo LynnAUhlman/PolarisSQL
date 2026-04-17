@@ -1,0 +1,11 @@
+SELECT
+br.BibliographicRecordID
+
+FROM
+BibliographicRecords br (NOLOCK)
+
+LEFT OUTER JOIN BibliographicTagsAndSubfields_View btv (NOLOCK) ON br.BibliographicRecordID = btv.BibliographicRecordID
+
+WHERE
+btv.TagNumber = 852 AND
+btv.Subfield = 'p' 

@@ -1,0 +1,30 @@
+SELECT
+br.BibliographicRecordID,
+br.MARCBibType,
+br.BrowseTitle,
+br.PrimaryMARCTOMID,
+tom.Description,
+cir.MaterialTypeId,
+mt.Description,
+cir.AssignedCollectionId,
+col.Name,
+cir.ShelfLocationId,
+sl.Description
+
+
+FROM
+BibliographicRecords br (NOLOCK)
+
+JOIN CircItemRecords cir (nolock) ON br.BibliographicRecordID = cir.AssociatedBibRecordID
+LEFT OUTER JOIN RWRITER_BibDerivedDataView RW (NOLOCK) ON br.BibliographicRecordID = RW.BibliographicRecordID
+JOIN MARCTypeOfMaterial tom (nolock) ON br.PrimaryMARCTOMID = tom.MARCTypeOfMaterialID
+JOIN MaterialTypes mt (nolock) ON cir.MaterialTypeID = mt.MaterialTypeID
+RIGHT OUTER JOIN Collections col (nolock) ON cir.AssignedCollectionID = col.CollectionID
+RIGHT OUTER JOIN ShelfLocations sl (nolock) ON cir.ShelfLocationID = sl.ShelfLocationID and cir.AssignedBranchID = sl.OrganizationID
+
+WHERE
+RW.NumberofItems = 1 AND
+br.MARCBibType = 'm' AND
+cir.AssignedBranchId =37
+
+ORDER BY tom.Description, cir.AssociatedBibRecordId

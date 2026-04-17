@@ -1,0 +1,15 @@
+###Finds unique bibs created between certain dates and ignores ILL items###
+
+
+SELECT 
+br.BibliographicRecordID
+
+FROM 
+BibliographicRecords br (NOLOCK)
+
+LEFT OUTER JOIN RWRITER_BibDerivedDataView RW (NOLOCK) ON br.BibliographicRecordID = RW.BibliographicRecordID
+
+WHERE 
+RW.NumberofItems = 1 AND
+br.ILLFlag = 0 AND
+br.CreationDate BETWEEN '07-19-2023' AND '08-15-2023'

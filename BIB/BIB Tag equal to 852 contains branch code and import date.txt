@@ -1,0 +1,14 @@
+SELECT
+br.BibliographicRecordID
+
+FROM
+BibliographicRecords br (NOLOCK)
+
+LEFT OUTER JOIN BibliographicTagsAndSubfields_View btv (NOLOCK) ON br.BibliographicRecordID = btv.BibliographicRecordID
+
+WHERE
+br.RecordStatusID = 2 AND
+br.ImportedDate BETWEEN '03-25-2024' AND '04-10-2024' AND
+btv.TagNumber = 852 AND
+btv.Subfield = 'a'  AND
+btv.Data LIKE '36'
