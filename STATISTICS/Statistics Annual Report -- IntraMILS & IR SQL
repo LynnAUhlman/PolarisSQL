@@ -2,7 +2,7 @@ DECLARE @StartDate DATETIME = '2024-03-01 00:00:00.000'
 DECLARE @EndDate DATETIME = '2024-03-31 23:59:59.999'
 
 SELECT DISTINCT
-    O.OrganizationID AS [Transaction Branch ID],
+    TH.OrganizationID AS [Transaction Branch ID],
     O.Name AS [Transaction Branch],
     TH.TranClientDate AS [Transaction Date],
     TH.TransactionTypeID AS [Transaction Type ID],
@@ -21,19 +21,20 @@ SELECT DISTINCT
 FROM
     PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK)
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK) ON (TD.TransactionID = TH.TransactionID AND TD.TransactionSubTypeID = 7)
+    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK) ON (TD.TransactionID = TH.TransactionID AND TD.TransactionSubTypeID = 7) --patron code
+
 INNER JOIN 
     Polaris.Organizations O WITH (NOLOCK) ON (TH.OrganizationID = O.OrganizationID)
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK) ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123)
+    PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK) ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123) --patron assigned branch id
 INNER JOIN 
-    PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK) ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125)
+    PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK) ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125) --item assigned branch id
 INNER JOIN 
     Polaris.Polaris.Organizations PO WITH (NOLOCK) ON (PO.OrganizationID = PB.numValue)
 INNER JOIN 
     Polaris.Polaris.Organizations IO WITH (NOLOCK) ON (IO.OrganizationID = IB.numValue)
 INNER JOIN 
-    Polaris.Polaris.TransactionDetails II WITH (NOLOCK) ON (TH.TransactionID = II.TransactionID AND II.TransactionSubTypeID = 38)
+    Polaris.Polaris.TransactionDetails II WITH (NOLOCK) ON (TH.TransactionID = II.TransactionID AND II.TransactionSubTypeID = 38) --item record id
 INNER JOIN 
     Polaris.Polaris.CircItemRecords CIR WITH (NOLOCK) ON (II.NumValue = CIR.ItemRecordID)
 INNER JOIN 
