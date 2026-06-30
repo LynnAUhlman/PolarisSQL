@@ -1,0 +1,25 @@
+SELECT
+    o.OrganizationID,
+    o.Name AS Organization,
+    pc.PatronCodeID,
+    pc.Description AS PatronCode,
+    mt.MaterialTypeID,
+    mt.Description AS MaterialType,
+    mll.MaxItems,
+    mll.MaxRequestItems
+FROM Polaris.Polaris.MaterialLoanLimits AS mll
+INNER JOIN Polaris.Polaris.Organizations AS o
+    ON mll.OrganizationID = o.OrganizationID
+INNER JOIN Polaris.Polaris.PatronCodes AS pc
+    ON mll.PatronCodeID = pc.PatronCodeID
+INNER JOIN Polaris.Polaris.MaterialTypes AS mt
+    ON mll.MaterialTypeID = mt.MaterialTypeID
+    
+WHERE
+    mll.OrganizationID = [enter organizationID]
+    AND mll.PatronCodeID = [enter patroncodeID]
+    
+ORDER BY
+    o.Name,
+    pc.Description,
+    mt.Description;
