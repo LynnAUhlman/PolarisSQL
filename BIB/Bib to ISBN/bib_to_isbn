@@ -1,0 +1,52 @@
+/* ============================
+    FIRST STEP
+   ============================ */
+In SSMS or in HeidiSQL:*/
+
+CREATE TABLE #BibList
+(
+    BibliographicRecordID INT NOT NULL PRIMARY KEY
+);
+
+/*
+Import the CSV into #BibList
+Then run a sql search in SSMS or in HeidiSQL for:
+*/
+
+SELECT
+    bl.BibliographicRecordID,
+    isbn.ISBNString AS ISBN
+FROM #BibList bl
+JOIN Polaris.Polaris.ISBNIndex isbn
+    ON bl.BibliographicRecordID = isbn.BibliographicRecordID
+WHERE isbn.StandardNumberTypeID = 1
+ORDER BY bl.BibliographicRecordID;
+
+/* ============================
+    SECOND STEP
+   ============================ */
+
+/*
+Export the results. 
+Grab the ISBNs and save them in a text file with one isbn per row. 
+Make sure the first line is the column header ISBNString.
+*/
+
+
+/* ============================
+    THIRD STEP
+   ============================ */
+   
+/*
+Import the file into a recordset in Leap.
+Then in Simply Reports export the .mrc records.
+Split the file into managable segments.
+*/
+
+/* ============================
+    FOURTH STEP
+   ============================ */
+/*
+Reimport the records using the load profile: MIN 1:1 match on 001 Record load -No items loaded 
+*/
+   
