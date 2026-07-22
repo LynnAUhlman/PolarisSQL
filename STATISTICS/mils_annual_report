@@ -1,0 +1,119 @@
+/* CircTrxStatistics */
+
+DECLARE @StartDate DATETIME = '{start_date.strftime('%Y-%m-%d %H:%M:%S')}'
+DECLARE @EndDate DATETIME = '{end_date.strftime('%Y-%m-%d %H:%M:%S')}'
+
+SELECT
+    O.OrganizationID [TransactionBranch ID],
+    O.Name AS [TransactionBranch],
+    TH.TranClientDate AS [TransactionDate],
+    TH.TransactionTypeID AS [TransactionTypeID],
+    TH.TransactionID AS [TransactionID],
+    TD.Numvalue AS [PatronCode],
+    PC.Description AS [PatronCodeDesc],
+    PO.OrganizationID AS [PatronBranchID],
+    PO.Name AS [PatronBranch],
+    IO.OrganizationID AS [ItemBranchID],
+    IO.Name AS [ItemBranch],
+    IR.Numvalue AS [ItemRecord],
+    ISC.Numvalue AS [ItemStatCode]
+
+FROM
+
+PolarisTransactions.Polaris.TransactionDetails TD with (NOLOCK)
+
+INNER JOIN 
+    PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK) 
+ON (TD.TransactionID = TH.TransactionID AND TD.TransactionSubTypeID = 7)
+
+INNER JOIN --- Gets the Transaction branch from TransactionDetails
+Polaris.Organizations O with (NOLOCK)
+        ON (TH.OrganizationID = O.OrganizationID)
+
+INNER JOIN --- Gets the patron's assigned branch from TransactionDetails
+PolarisTransactions.Polaris.TransactionDetails PB WITH (NOLOCK)
+        ON (TH.TransactionID = PB.TransactionID AND PB.TransactionSubTypeID = 123)
+
+INNER JOIN --- Gets the item’s assigned branch from TransactionDetails
+    PolarisTransactions.Polaris.TransactionDetails IB WITH (NOLOCK)
+        ON (TH.TransactionID = IB.TransactionID AND IB.TransactionSubTypeID = 125)
+        
+INNER JOIN --- Gets the item record number from TransactionDetails
+    PolarisTransactions.Polaris.TransactionDetails IR WITH (NOLOCK)
+        ON (TH.TransactionID = IR.TransactionID AND IR.TransactionSubTypeID = 38)
+
+INNER JOIN --- Gets the item statistical code from TransactionDetails
+    PolarisTransactions.Polaris.TransactionDetails ISC WITH (NOLOCK)
+        ON (TH.TransactionID = ISC.TransactionID AND ISC.TransactionSubTypeID = 60)
+
+INNER JOIN --- Hooks up Organizations to the patron’s assigned branch from TransactionDetails
+    Polaris.Polaris.Organizations PO WITH (NOLOCK)
+        ON (PO.OrganizationID = PB.numValue)
+
+INNER JOIN --- Hooks up Organizations to the item’s assigned branch from TransactionDetails
+    Polaris.Polaris.Organizations IO WITH (NOLOCK)
+        ON (IO.OrganizationID = IB.numValue)
+
+INNER JOIN ---Gets the TransactionDetails patron code values
+    Polaris.PatronCodes PC with (NOLOCK)
+        ON (PC.PatronCodeID = TD.NumValue)
+
+WHERE
+
+    TH.TranClientDate BETWEEN @StartDate AND @EndDate
+AND
+    TH.TransactionTypeID = 6001
+
+ORDER BY
+
+    O.Name, PC.Description
+
+
+
+/* ILLRequestStatistics */
+
+DECLARE @StartDate DATETIME = '{start_date.strftime('%Y-%m-%d %H:%M:%S')}'
+DECLARE @EndDate DATETIME = '{end_date.strftime('%Y-%m-%d %H:%M:%S')}'
+
+SELECT TH.TransactionTypeID, 
+    TH.TranClientDate as TransactionDate, 
+    TH.WorkstationID, 
+    W.ComputerName,
+    TD.NumValue as PatronCode,
+    PC.Description,
+    TD1.NumvAlue as PatronOrganizationID,
+    O.Name as PatronLibrary,
+    O2.Name as TransactionOrgName,
+    Pickup.OrganizationID,
+    Pickup.Name as PickupLibrary
+        
+FROM PolarisTransactions.Polaris.TransactionHeaders TH WITH (NOLOCK)
+
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD WITH (NOLOCK)
+        ON TH.TransactionID = TD.TransactionID AND TD.TransactionSubTypeID = 7
+        
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD1 WITH (NOLOCK)
+        ON TH.TransactionID = TD1.TransactionID AND TD1.TransactionSubTypeID = 13
+        
+INNER JOIN PolarisTransactions.Polaris.TransactionDetails TD2 WITH (NOLOCK)
+        ON TH.TransactionID = TD2.TransactionID AND TD2.TransactionSubTypeID = 149
+        
+INNER JOIN Polaris.Organizations O WITH (NOLOCK)
+        ON TD1.numvalue = O.OrganizationID
+        
+INNER JOIN Polaris.Organizations Pickup WITH (NOLOCK)
+        ON TD2.numvalue = Pickup.OrganizationID
+        
+INNER JOIN Polaris.PatronCodes PC WITH (NOLOCK)
+        ON TD.numValue = PC.PatronCodeID
+        
+INNER JOIN Polaris.Organizations O2 WITH (NOLOCK)
+        ON TH.OrganizationID = O2.OrganizationID
+        
+INNER JOIN Polaris.Workstations W WITH (NOLOCK)
+        ON TH.WorkstationID = W.WorkstationID					
+        
+WHERE 
+    TH.TransactionTypeID = 6033
+AND
+    TH.TranClientDate BETWEEN @StartDate AND @EndDate
